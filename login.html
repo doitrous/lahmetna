@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log in · Lahmetna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1 class="display">Welcome back</h1>
+    <p class="muted" style="font-size:14px">Log in to your Lahmetna account.</p>
+    <form id="login-form">
+      <div class="form-row"><label class="label" for="email">Email</label><input class="field" id="email" type="email" required autocomplete="email"></div>
+      <div class="form-row"><label class="label" for="password">Password</label><input class="field" id="password" type="password" required autocomplete="current-password"></div>
+      <div id="err" class="form-error" hidden></div>
+      <button class="btn btn-primary btn-block" style="margin-top:20px;height:48px">Log in</button>
+    </form>
+    <div class="switch-line">New to Lahmetna? <a href="signup.html">Create an account</a></div>
+    <div class="switch-line" style="margin-top:8px">Approved vendor? <a href="signup.html?type=vendor">Set up your vendor account</a></div>
+    <div class="card" style="margin-top:20px;padding:14px 16px;background:var(--bone-2);border:none;font-size:12.5px;color:var(--ink-2)">
+      <strong>Demo logins</strong> · admin@lahmetna.com / admin1234 · customer@lahmetna.com / customer1234 · bonkam@lahmetna.com / vendor1234
+    </div>
+  </div>
+</div>
+<div id="site-footer"></div>
+<script src="common.js"></script>
+<script>
+LH.boot().then(function(){
+  var next = new URLSearchParams(location.search).get('next');
+  document.getElementById('login-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var err = document.getElementById('err'); err.hidden = true;
+    LH.POST('/api/auth/login', { email: document.getElementById('email').value.trim(), password: document.getElementById('password').value })
+      .then(function(d){
+        if (next) return location.href = next;
+        var r = d.user.role;
+        location.href = r === 'admin' ? 'admin.html' : r === 'vendor' ? 'vendor.html' : 'account.html';
+      })
+      .catch(function(e){ err.textContent = e.message; err.hidden = false; });
+  });
+});
+</script>
+</body>
+</html>

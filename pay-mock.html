@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secure payment · PayTabs (test)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body style="background:#EDE7DC">
+<div style="max-width:440px;margin:0 auto;padding:56px 20px">
+  <div class="row between" style="margin-bottom:16px"><strong style="font-family:var(--font-display);font-size:18px">PayTabs</strong><span class="pill" style="background:#F5EAD6;color:#7A5A1E;border:none">Sandbox / test mode</span></div>
+  <div class="card" style="padding:28px 26px">
+    <div class="muted" style="font-size:13px">Paying <span id="order">—</span></div>
+    <div class="display" style="font-size:34px;margin-top:4px" id="amount">—</div>
+    <div class="divider" style="margin:18px 0"></div>
+    <form id="pay-form">
+      <label class="label">Card number</label>
+      <input class="field" value="4111 1111 1111 1111" inputmode="numeric">
+      <div class="field-row" style="margin-top:12px"><div><label class="label">Expiry</label><input class="field" value="12 / 28"></div><div><label class="label">CVV</label><input class="field" value="123"></div></div>
+      <div id="err" class="form-error" hidden></div>
+      <button class="btn btn-primary btn-block" style="margin-top:20px;height:48px" id="pay">Pay now</button>
+      <button type="button" class="btn btn-outline btn-block" style="margin-top:10px" id="cancel">Cancel &amp; return</button>
+    </form>
+    <p class="muted" style="font-size:11.5px;text-align:center;margin-top:14px">Test gateway — no real card is charged. Add live PayTabs keys to <code>.env</code> to process real payments.</p>
+  </div>
+</div>
+<script src="common.js"></script>
+<script>
+(function(){
+  var order = new URLSearchParams(location.search).get('order');
+  document.getElementById('order').textContent = 'order ' + (order||'');
+  LH.api('/api/orders/' + order).then(function(o){ document.getElementById('amount').textContent = LH.money(o.total); })
+    .catch(function(){ document.getElementById('amount').textContent = '—'; });
+  function done(result){
+    var btn = document.getElementById('pay'); btn.disabled = true; btn.textContent = 'Processing…';
+    LH.POST('/api/pay/mock/' + order, { result: result }).then(function(d){ location.href = d.redirect; })
+      .catch(function(e){ var err = document.getElementById('err'); err.textContent = e.message; err.hidden = false; btn.disabled=false; btn.textContent='Pay now'; });
+  }
+  document.getElementById('pay-form').addEventListener('submit', function(e){ e.preventDefault(); done('success'); });
+  document.getElementById('cancel').addEventListener('click', function(){ done('fail'); });
+})();
+</script>
+</body>
+</html>

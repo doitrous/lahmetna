@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lahmetna — Natural Meat & Fresh Farm Produce</title>
+<meta name="description" content="The marketplace for naturally raised meat and fresh farm produce, direct from named farms across Egypt.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<!-- hero -->
+<section class="wrap"><div class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow">Farm-direct · raised right, priced fair</span>
+    <h1>real meat.<br>no middlemen.<br><em>delivered.</em></h1>
+    <p>The marketplace for naturally raised meat, live animals and fresh farm produce — sourced from named farms, cut to order, and carried cold to your door.</p>
+    <a href="#shop" class="btn btn-champagne">Shop the farm <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <div class="hero-note"><span class="tag-dot"></span>40+ partner farms · 12k kitchens served · 4.9★ average rating</div>
+  </div>
+  <div class="hero-photo">
+    <img src="assets/hero.jpg" alt="Cattle grazing on open pasture">
+    <div class="harvest-stamp"><span>FRESH THIS</span><strong>WEEK</strong><span>farm harvest</span></div>
+  </div>
+</div></section>
+
+<!-- trust -->
+<div class="trust-strip">
+  <div class="wrap grid cols-4" style="padding:22px 24px;gap:24px">
+    <div class="row" style="gap:12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6"><path d="M12 3s7 2 7 8-4 9-7 10c-3-1-7-4-7-10s7-8 7-8z"/><path d="M9 12l2 2 4-4"/></svg><div><div style="font-weight:600;font-size:14px">Pasture-raised</div><div class="muted" style="font-size:12.5px">Grass-fed, no routine antibiotics</div></div></div>
+    <div class="row" style="gap:12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6"><path d="M12 2l8 4v5c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V6z"/></svg><div><div style="font-weight:600;font-size:14px">Halal &amp; hand-cut</div><div class="muted" style="font-size:12.5px">Processed to order, never frozen twice</div></div></div>
+    <div class="row" style="gap:12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6"><path d="M3 7h13v9H3z"/><path d="M16 10h3l2 3v3h-5z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg><div><div style="font-weight:600;font-size:14px">Next-day cold-chain</div><div class="muted" style="font-size:12.5px">Sealed, chilled, tracked end-to-end</div></div></div>
+    <div class="row" style="gap:12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 00-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 00-8-8z"/></svg><div><div style="font-weight:600;font-size:14px">Traceable sourcing</div><div class="muted" style="font-size:12.5px">Every order names its farm</div></div></div>
+  </div>
+</div>
+
+<!-- categories -->
+<section class="section wrap">
+  <div class="between"><div><div class="eyebrow">Shop by farm line</div><h2 class="h2" style="margin-top:8px">Everything a fresh farm makes</h2></div>
+    <a href="#shop" class="row" style="font-size:14px;font-weight:600;color:var(--cognac);gap:6px">Browse all products <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--burgundy)" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+  <div class="grid cols-4" id="cat-grid" style="margin-top:26px"></div>
+</section>
+
+<!-- shop -->
+<section class="section wrap" id="shop">
+  <div class="between"><div><div class="eyebrow">The market</div><h2 class="h2" style="margin-top:8px">Fresh this week</h2></div><div class="muted" id="shop-count" style="font-size:13px"></div></div>
+  <div class="row" id="filters" style="gap:10px;margin-top:22px;flex-wrap:wrap"></div>
+  <div class="grid cols-4" id="product-grid" style="margin-top:24px"></div>
+</section>
+
+<!-- our farms -->
+<section class="section wrap">
+  <div class="card" style="display:grid;grid-template-columns:1.05fr 1fr;border-radius:var(--r-xl)">
+    <div style="position:relative;min-height:380px"><img src="assets/our-farms.jpg" alt="Our farms in the Egyptian countryside" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></div>
+    <div style="padding:48px 44px;display:flex;flex-direction:column;justify-content:center">
+      <div class="eyebrow">Our farms</div>
+      <h2 class="h2" style="font-size:28px;margin-top:8px">Every order traces back<br>to a farm you can name</h2>
+      <p class="muted" style="font-size:15px;line-height:1.6;margin-top:16px;max-width:420px">Bonkam, Elreef and Elwady raise their animals on open pasture and grow produce without the industrial shortcuts. You see the farm, the cut date, and the hands behind it — on every label.</p>
+      <div class="row" style="gap:10px;margin-top:24px;flex-wrap:wrap"><span class="pill">Open pasture</span><span class="pill">No growth hormones</span><span class="pill">Same-week harvest</span></div>
+      <a href="apply.html" class="btn btn-primary" style="margin-top:26px;align-self:flex-start">Become a vendor <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- reviews teaser -->
+<section class="section wrap" id="reviews">
+  <div class="between"><div><div class="eyebrow">Reviews</div><h2 class="h2" style="margin-top:8px">Loved by 12,000+ kitchens</h2></div>
+    <div class="row" style="gap:10px;align-items:center"><span class="stars" style="font-size:17px"><span style="width:98%"></span></span><span class="muted" style="font-size:14px">4.9 · 3,180+ verified orders</span></div>
+  </div>
+  <div class="grid cols-3 reviews-grid" id="reviews-list" style="margin-top:24px"></div>
+</section>
+
+<!-- faq -->
+<section class="section wrap" id="faq">
+  <div class="grid" style="grid-template-columns:340px 1fr;gap:56px">
+    <div><div class="eyebrow">Help centre</div><h2 class="h2" style="margin-top:8px">Frequently asked questions</h2>
+      <p class="muted" style="font-size:15px;line-height:1.6;margin-top:14px">Everything about sourcing, live animals, delivery, storage and returns. Still stuck? Our team answers within the hour, 9am–9pm.</p>
+      <a href="apply.html" class="btn btn-ink" style="margin-top:20px">Sell on Lahmetna <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6F1E8" stroke-width="1.7"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="accordion" id="faq-list"></div>
+  </div>
+</section>
+
+<!-- newsletter -->
+<section class="section wrap">
+  <div style="background:var(--warm);border:1px solid var(--line);border-radius:var(--r-xl);padding:44px 44px;display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap">
+    <div style="max-width:520px"><div class="eyebrow">Newsletter</div><h2 class="h2" style="margin-top:8px">Fresh drops, every Thursday</h2>
+      <p class="muted" style="font-size:15px;line-height:1.55;margin-top:10px">What's in season, what's just been cut, and members-only pricing. No spam — one email a week.</p></div>
+    <form class="row" id="news-form" style="gap:10px;flex:none"><input class="field" type="email" required placeholder="you@email.com" style="width:260px"><button class="btn btn-primary">Subscribe</button></form>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<script src="data.js"></script>
+<script src="common.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

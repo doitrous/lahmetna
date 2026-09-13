@@ -1,0 +1,11 @@
+{
+  "name": "lahmetna-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lahmetna storefront — natural meat & fresh farm produce (zero-dependency Node backend + static frontend)",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "engines": { "node": ">=22.5.0" }
+}

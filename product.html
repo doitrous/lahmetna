@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Product · Lahmetna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="pdp-root"><div class="wrap" style="padding:80px 24px" class="muted">Loading…</div></main>
+
+<!-- reviews section -->
+<section class="section wrap" id="pdp-reviews" hidden>
+  <div class="eyebrow">Reviews</div>
+  <h2 class="h2" style="margin-top:8px" id="rev-heading">Customer reviews</h2>
+  <div class="grid summary-grid" style="grid-template-columns:300px 1fr;gap:40px;margin-top:26px;align-items:center">
+    <div class="card" style="padding:26px;text-align:center">
+      <div class="display" style="font-size:56px;line-height:1" id="rev-avg">0.0</div>
+      <div class="stars" id="rev-avg-stars" style="font-size:18px;margin-top:6px"><span style="width:0"></span></div>
+      <div class="muted" style="font-size:13px;margin-top:10px">Based on <span id="rev-total">0</span> reviews</div>
+      <button class="btn btn-outline btn-block" id="btn-write" style="margin-top:18px">Write a review</button>
+    </div>
+    <div id="dist" style="display:flex;flex-direction:column;gap:9px"></div>
+  </div>
+  <div class="row between" style="margin-top:36px;flex-wrap:wrap;gap:14px">
+    <div class="row" id="rev-filters" style="gap:8px;flex-wrap:wrap"></div>
+    <label class="row" style="gap:8px;font-size:13px;color:var(--ink-2)">Sort
+      <select class="field" id="rev-sort" style="height:38px;width:auto;padding:0 30px 0 12px"><option value="recent">Most recent</option><option value="helpful">Most helpful</option><option value="high">Highest</option><option value="low">Lowest</option></select>
+    </label>
+  </div>
+  <div class="grid cols-3 reviews-grid" id="reviews-list" style="margin-top:22px"></div>
+</section>
+
+<!-- related -->
+<section class="section wrap" id="related-wrap" hidden>
+  <h2 class="h2">More from this farm line</h2>
+  <div class="grid cols-4" id="related" style="margin-top:22px"></div>
+</section>
+
+<div id="site-footer"></div>
+
+<!-- write review modal -->
+<div class="scrim-full" id="scrim-modal"></div>
+<div class="modal" id="modal" role="dialog" aria-label="Write a review">
+  <form id="review-form" style="padding:28px 30px">
+    <div class="row between"><strong class="display" style="font-size:20px">Write a review</strong><button type="button" class="icon-btn" id="btn-modal-close">✕</button></div>
+    <div style="margin-top:20px"><span class="label">Your rating</span>
+      <div class="rate-input" id="rate-input"><input type="radio" name="rate" id="r5" value="5" checked><label for="r5">★</label><input type="radio" name="rate" id="r4" value="4"><label for="r4">★</label><input type="radio" name="rate" id="r3" value="3"><label for="r3">★</label><input type="radio" name="rate" id="r2" value="2"><label for="r2">★</label><input type="radio" name="rate" id="r1" value="1"><label for="r1">★</label></div>
+    </div>
+    <div class="form-row"><span class="label">Name</span><input class="field" id="rev-name" required placeholder="e.g. Omar S."></div>
+    <div class="form-row"><span class="label">Headline</span><input class="field" id="rev-title" required placeholder="Sum it up"></div>
+    <div class="form-row"><span class="label">Your review</span><textarea class="field" id="rev-body" required placeholder="Quality, freshness, delivery…"></textarea></div>
+    <button class="btn btn-primary btn-block" style="margin-top:22px">Submit review</button>
+    <p class="muted" style="font-size:12px;text-align:center;margin:12px 0 0">By posting, you agree to our review guidelines.</p>
+  </form>
+</div>
+
+<script src="common.js"></script>
+<script src="product.js"></script>
+</body>
+</html>

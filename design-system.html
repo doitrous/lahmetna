@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lahmetna — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .ds-hd{background:var(--ink);color:var(--bone);padding:40px 0}
+  .ds-sec{padding:44px 0;border-bottom:1px solid var(--line)}
+  .ds-sec h2{font-size:22px}
+  .swatch{border-radius:var(--r-md);height:78px;border:1px solid rgba(27,23,20,.06);box-shadow:var(--sh-1)}
+  .sw-name{font-family:var(--font-display);font-size:12.5px;font-weight:600;margin-top:8px}
+  .sw-hex{font-size:11.5px;color:var(--ink-3)}
+  .spec{font-size:12px;color:var(--ink-3);font-family:var(--font-display)}
+  .demo-card{background:var(--paper);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:22px}
+  .lbl-k{font-family:var(--font-display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<div class="ds-hd">
+  <div class="wrap between" style="align-items:center">
+    <div>
+      <div class="eyebrow" style="color:#E9A05F">Design System</div>
+      <div class="brand" style="font-size:44px;margin-top:4px">lahmetna</div>
+      <div style="color:rgba(246,241,232,.7);font-size:14px;margin-top:2px">Direction C — modern · minimal · warm · v1.0</div>
+    </div>
+    <a href="index.html" class="btn btn-primary">View the storefront →</a>
+  </div>
+</div>
+
+<!-- COLOUR -->
+<section class="ds-sec"><div class="wrap">
+  <h2>Colour</h2>
+  <p class="muted" style="max-width:640px;margin-top:6px">Warm bone grounds, near-black ink, a single cognac accent. Supporting earth tones carry photo-less produce tiles. Hairlines are the umber at low alpha — never grey.</p>
+  <div class="lbl-k" style="margin-top:24px">Core</div>
+  <div class="grid cols-4" style="gap:16px">
+    <div><div class="swatch" style="background:#F6F1E8"></div><div class="sw-name">Bone</div><div class="sw-hex">#F6F1E8 · page ground</div></div>
+    <div><div class="swatch" style="background:#FFFFFF"></div><div class="sw-name">Paper</div><div class="sw-hex">#FFFFFF · cards</div></div>
+    <div><div class="swatch" style="background:#1B1714"></div><div class="sw-name">Ink</div><div class="sw-hex">#1B1714 · text, buttons</div></div>
+    <div><div class="swatch" style="background:#C06A2C"></div><div class="sw-name">Cognac</div><div class="sw-hex">#C06A2C · the one accent</div></div>
+  </div>
+  <div class="lbl-k" style="margin-top:26px">Text &amp; lines</div>
+  <div class="grid cols-4" style="gap:16px">
+    <div><div class="swatch" style="background:#6E655B"></div><div class="sw-name">Ink-2</div><div class="sw-hex">#6E655B · secondary</div></div>
+    <div><div class="swatch" style="background:#9B9084"></div><div class="sw-name">Ink-3</div><div class="sw-hex">#9B9084 · muted</div></div>
+    <div><div class="swatch" style="background:#E7DECF"></div><div class="sw-name">Line</div><div class="sw-hex">#E7DECF · hairline</div></div>
+    <div><div class="swatch" style="background:#A0561F"></div><div class="sw-name">Cognac-dk</div><div class="sw-hex">#A0561F · hover</div></div>
+  </div>
+  <div class="lbl-k" style="margin-top:26px">Produce accents</div>
+  <div class="grid cols-4" style="gap:16px">
+    <div><div class="swatch" style="background:#556149"></div><div class="sw-name">Olive</div><div class="sw-hex">#556149 · vegetables</div></div>
+    <div><div class="swatch" style="background:#A24A44"></div><div class="sw-name">Clay</div><div class="sw-hex">#A24A44 · fruit</div></div>
+    <div><div class="swatch" style="background:#B0762C"></div><div class="sw-name">Amber</div><div class="sw-hex">#B0762C · honey</div></div>
+    <div><div class="swatch" style="background:#4B6B45"></div><div class="sw-name">Olive-ok</div><div class="sw-hex">#4B6B45 · verified</div></div>
+  </div>
+</div></section>
+
+<!-- TYPE -->
+<section class="ds-sec"><div class="wrap">
+  <h2>Typography</h2>
+  <div class="grid cols-3" style="margin-top:22px;gap:32px">
+    <div><div class="lbl-k">Brand — Cormorant</div><div class="brand" style="font-size:46px">lahmetna</div><div class="spec">Elegant serif · wordmark only</div></div>
+    <div><div class="lbl-k">Display — Space Grotesk</div><div class="display" style="font-size:40px">Aa Bb</div><div class="spec">700 · headlines, prices, labels</div></div>
+    <div><div class="lbl-k">UI — Hanken Grotesk</div><div style="font-size:36px;font-weight:600">Aa Bb</div><div class="spec">400–600 · body &amp; interface</div></div>
+  </div>
+  <div class="divider" style="margin:28px 0"></div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Eyebrow · 12 / .16em / uppercase</div>
+    <div class="display" style="font-size:44px">Headline display 44</div>
+    <h2 class="h2">Section heading · h2</h2>
+    <div class="display" style="font-size:19px;font-weight:700">Price / stat · 19–22</div>
+    <p style="font-size:15px;max-width:620px;margin:0" class="muted">Body copy at 15px / 1.55 in Hanken Grotesk. Comfortable measure, warm ink-2 for secondary text. The quick brown fox jumps over the lazy dog.</p>
+  </div>
+</div></section>
+
+<!-- BUTTONS -->
+<section class="ds-sec"><div class="wrap">
+  <h2>Buttons</h2>
+  <div class="row" style="gap:14px;margin-top:20px;flex-wrap:wrap">
+    <button class="btn btn-primary">Primary</button>
+    <button class="btn btn-ink">Ink</button>
+    <button class="btn btn-outline">Outline</button>
+    <button class="btn btn-primary btn-sm">Small</button>
+    <span style="background:var(--ink);padding:10px;border-radius:10px"><button class="btn btn-ghost-light">On dark</button></span>
+    <button class="icon-btn" aria-label="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+  <div class="lbl-k" style="margin-top:28px">Badges · pills · chips</div>
+  <div class="row" style="gap:12px;flex-wrap:wrap;align-items:center">
+    <span class="badge">Dry-aged 28d</span>
+    <span class="badge badge-cognac">Bestseller</span>
+    <span class="pill">Open pasture</span>
+    <span class="pill">No hormones</span>
+    <button class="chip" aria-pressed="true">Selected</button>
+    <button class="chip">Chip</button>
+    <span class="stars" style="font-size:16px"><span style="width:96%"></span></span>
+  </div>
+</div></section>
+
+<!-- COMPONENTS -->
+<section class="ds-sec"><div class="wrap">
+  <h2>Components</h2>
+  <div class="grid" style="grid-template-columns:300px 1fr;gap:32px;margin-top:22px">
+
+    <div>
+      <div class="lbl-k">Product card</div>
+      <div class="card product" style="max-width:300px">
+        <div class="media"><img src="assets/cat-beef.jpg" alt=""><span class="badge badge-cognac" style="position:absolute;top:10px;left:10px">Dry-aged 28d</span></div>
+        <div class="body">
+          <div class="origin">Beef · Bonkam Farm</div>
+          <div class="name">Dry-Aged Ribeye · 300g</div>
+          <div class="row" style="gap:6px;margin-top:7px;font-size:12.5px"><span class="stars"><span style="width:98%"></span></span><span class="muted">4.9 (214)</span></div>
+          <div class="row between" style="margin-top:12px"><span class="price">EGP 420</span><button class="btn btn-ink btn-sm">Add</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="lbl-k">Review card</div>
+      <div class="card review" style="padding:20px 22px;max-width:420px">
+        <span class="stars"><span style="width:100%"></span></span>
+        <div class="display" style="font-size:16px;font-weight:600;margin-top:10px">Proper marbling, like a steakhouse</div>
+        <p class="muted" style="font-size:14px;margin:8px 0 0">Arrived cold and vacuum-sealed. Best ribeye I’ve cooked at home.</p>
+        <div class="row between" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)">
+          <div class="head"><div class="avatar">N</div><div><div style="font-size:13px;font-weight:600">Nour A.</div><div style="font-size:11.5px;color:var(--cognac);font-weight:600">✓ Verified · Ribeye</div></div></div>
+          <button class="helpful"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 11v9H3v-9zM7 11l4-8c1.5 0 2.5 1 2.5 2.5V9h5c1.2 0 2 1 1.8 2.2l-1.3 7c-.2 1-1 1.8-2 1.8H7"/></svg>34</button>
+        </div>
+      </div>
+
+      <div class="lbl-k" style="margin-top:26px">Accordion &amp; fields</div>
+      <div class="grid cols-2" style="align-items:start">
+        <div class="accordion" style="border-top:none">
+          <div class="acc-item open"><div class="acc-head" style="padding:16px 4px">Is the meat halal?<span class="acc-icon"></span></div><div class="acc-panel" style="max-height:120px"><div class="inner" style="padding:0 4px 18px">Yes — halal and hand-cut to order by certified butchers.</div></div></div>
+          <div class="acc-item"><div class="acc-head" style="padding:16px 4px">How does delivery work?<span class="acc-icon"></span></div></div>
+        </div>
+        <div>
+          <span class="label">Email</span>
+          <input class="field" placeholder="you@email.com">
+          <div style="height:12px"></div>
+          <div class="qty"><button>–</button><span>1</span><button>+</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- SHAPE -->
+<section class="ds-sec"><div class="wrap">
+  <h2>Radius, elevation &amp; motion</h2>
+  <div class="grid cols-4" style="margin-top:22px">
+    <div><div style="height:70px;background:var(--paper);border:1px solid var(--line);border-radius:7px"></div><div class="spec" style="margin-top:8px">7 · chips, badges</div></div>
+    <div><div style="height:70px;background:var(--paper);border:1px solid var(--line);border-radius:11px"></div><div class="spec" style="margin-top:8px">11 · buttons, inputs</div></div>
+    <div><div style="height:70px;background:var(--paper);border:1px solid var(--line);border-radius:14px"></div><div class="spec" style="margin-top:8px">14 · cards</div></div>
+    <div><div style="height:70px;background:var(--paper);border:1px solid var(--line);border-radius:20px"></div><div class="spec" style="margin-top:8px">20 · bands, modals</div></div>
+  </div>
+  <div class="grid cols-3" style="margin-top:24px">
+    <div><div style="height:70px;background:var(--paper);border-radius:14px;box-shadow:var(--sh-1)"></div><div class="spec" style="margin-top:8px">Elevation 1</div></div>
+    <div><div style="height:70px;background:var(--paper);border-radius:14px;box-shadow:var(--sh-2)"></div><div class="spec" style="margin-top:8px">Elevation 2 · hover</div></div>
+    <div><div style="height:70px;background:var(--paper);border-radius:14px;box-shadow:var(--sh-3)"></div><div class="spec" style="margin-top:8px">Elevation 3 · overlays</div></div>
+  </div>
+  <p class="muted" style="margin-top:22px;font-size:14px">Motion — 140ms / 240ms on <code>cubic-bezier(.2,.8,.2,1)</code>. Cards lift on hover; overlays slide. <code>prefers-reduced-motion</code> disables all of it.</p>
+</div></section>
+
+<div class="wrap" style="padding:40px 24px"><a href="index.html" class="btn btn-outline">← Back to storefront</a></div>
+
+</body>
+</html>

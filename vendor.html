@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vendor dashboard · Lahmetna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-head"><div class="wrap"><div class="eyebrow">Vendor dashboard</div><h1 class="display" style="margin-top:6px" id="vendor-name">Your farm</h1></div></div>
+<main class="dash">
+  <nav class="dash-nav">
+    <button data-tab="overview" class="active">Overview</button>
+    <button data-tab="products">Products</button>
+    <button data-tab="orders">Orders</button>
+    <button data-tab="earnings">Earnings</button>
+    <button data-tab="payouts">Payouts</button>
+    <button data-tab="analytics">Analytics</button>
+    <button data-tab="awal">Lahmetna Awal</button>
+    <button data-tab="profile">Store profile</button>
+    <button data-tab="support">Support</button>
+    <button data-tab="security">Security</button>
+  </nav>
+  <div id="panel"><div class="muted">Loading…</div></div>
+</main>
+<div id="site-footer"></div>
+
+<!-- product modal -->
+<div class="scrim-full" id="scrim-prod"></div>
+<div class="modal" id="prod-modal" role="dialog" aria-label="Product">
+  <form id="prod-form" style="padding:26px 28px">
+    <div class="row between"><strong class="display" style="font-size:20px" id="prod-title">Add product</strong><button type="button" class="icon-btn" id="prod-close">✕</button></div>
+    <input type="hidden" id="p-id">
+    <div class="form-row"><label class="label">Product name</label><input class="field" id="p-name" required placeholder="e.g. Grass-Fed Ribeye · 300g"></div>
+    <div class="field-row" style="margin-top:14px">
+      <div><label class="label">Category</label><select class="field" id="p-cat"></select></div>
+      <div><label class="label">Type</label><select class="field" id="p-type"><option value="packaged">Packaged product</option><option value="livestock">Live / whole animal</option></select></div>
+    </div>
+    <div class="field-row" style="margin-top:14px" id="packaged-fields">
+      <div><label class="label">Price (EGP)</label><input class="field" id="p-price" type="number" min="1" inputmode="numeric"></div>
+      <div><label class="label">Unit</label><input class="field" id="p-unit" placeholder="e.g. 500g, each, 1kg"></div>
+    </div>
+    <div class="field-row" style="margin-top:14px" id="livestock-fields" hidden>
+      <div><label class="label">Price per kg (EGP)</label><input class="field" id="p-ppk" type="number" min="1" inputmode="numeric"></div>
+      <div><label class="label">Est. weight (kg)</label><input class="field" id="p-weight" type="number" min="1" step="0.5" inputmode="decimal"></div>
+    </div>
+    <div class="field-row" style="margin-top:14px">
+      <div><label class="label">Stock</label><input class="field" id="p-stock" type="number" min="0" value="0" inputmode="numeric"></div>
+      <div><label class="label">Badge (optional)</label><input class="field" id="p-badge" placeholder="e.g. Bestseller"></div>
+    </div>
+    <div class="form-row"><label class="label">Description</label><textarea class="field" id="p-desc" placeholder="How it’s raised or grown, what makes it special…"></textarea></div>
+    <label class="row" style="gap:8px;margin-top:14px;font-size:14px;cursor:pointer"><input type="checkbox" id="p-active" checked> Active (visible in the shop)</label>
+    <div id="prod-err" class="form-error" hidden></div>
+    <button class="btn btn-primary btn-block" style="margin-top:20px;height:48px" id="prod-save">Save product</button>
+  </form>
+</div>
+
+<script src="common.js"></script>
+<script src="vendor.js"></script>
+</body>
+</html>

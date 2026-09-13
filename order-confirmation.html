@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order confirmation · Lahmetna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="root"><div class="wrap" style="padding:60px 24px" class="muted">Loading order…</div></main>
+<div id="site-footer"></div>
+<script src="common.js"></script>
+<script>
+LH.boot().then(function(){
+  var id = new URLSearchParams(location.search).get('order');
+  LH.api('/api/orders/' + id).then(function(o){
+    var paid = o.status === 'paid', placed = o.status === 'placed', failed = o.status === 'failed';
+    var head = failed
+      ? '<div style="width:56px;height:56px;border-radius:999px;background:#F7E1DB;display:grid;place-items:center;margin:0 auto"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8A2F1E" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg></div><h1 class="display" style="margin-top:16px">Payment didn’t go through</h1><p class="muted" style="margin-top:8px">Your order wasn’t charged. You can try again from checkout.</p><a class="btn btn-primary" href="checkout.html" style="margin-top:18px">Back to checkout</a>'
+      : '<div style="width:56px;height:56px;border-radius:999px;background:var(--ok-soft);display:grid;place-items:center;margin:0 auto"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4B6B45" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg></div>'
+        + '<h1 class="display" style="margin-top:16px">' + (paid ? 'Payment received' : 'Order placed') + '</h1>'
+        + '<p class="muted" style="margin-top:8px">Thank you, ' + LH.esc(o.name) + '. ' + (placed ? 'You’ll pay cash on delivery.' : 'We’ll call to confirm your delivery window.') + '</p>';
+    var itemsHtml = o.items.map(function(it){ return '<div class="row between" style="font-size:14px;margin-bottom:8px"><span>' + LH.esc(it.name.split(' · ')[0]) + ' × ' + it.qty + '</span><span>' + LH.money(it.line_total) + '</span></div>'; }).join('');
+    document.getElementById('root').innerHTML =
+      '<div class="wrap" style="max-width:560px;padding:48px 24px;text-align:center">' + head +
+        (failed ? '' :
+        '<div class="card" style="margin-top:22px;padding:20px 22px;text-align:left">' +
+          '<div class="row between"><span class="muted">Order</span><strong>' + LH.esc(o.id) + '</strong></div>' +
+          '<div class="row between" style="margin-top:6px"><span class="muted">Status</span><span class="st st-' + o.status + '">' + o.status + '</span></div>' +
+          '<div class="row between" style="margin-top:6px"><span class="muted">Payment</span><span>' + (o.method === 'cod' ? 'Cash on delivery' : 'Card · PayTabs') + '</span></div>' +
+          '<div class="divider" style="margin:14px 0"></div>' + itemsHtml +
+          '<div class="divider" style="margin:14px 0"></div>' +
+          '<div class="row between" style="font-size:13px;margin-bottom:6px"><span class="muted">Delivery</span><span>' + (o.delivery ? LH.money(o.delivery) : 'Free') + '</span></div>' +
+          '<div class="row between"><strong>Total</strong><strong class="display" style="font-size:20px">' + LH.money(o.total) + '</strong></div>' +
+          '<div class="muted" style="font-size:13px;margin-top:14px">Delivering to: ' + LH.esc(o.address) + '</div>' +
+        '</div>' +
+        '<div class="row" style="gap:12px;justify-content:center;margin-top:22px"><a class="btn btn-primary" href="index.html#shop">Keep shopping</a><a class="btn btn-outline" href="account.html#orders">View my orders</a></div>') +
+      '</div>';
+  }).catch(function(){
+    document.getElementById('root').innerHTML = '<div class="wrap" style="padding:60px 24px;text-align:center">We couldn’t find that order. <a href="index.html">Back to shop</a></div>';
+  });
+});
+</script>
+</body>
+</html>

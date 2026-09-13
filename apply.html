@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sell on Lahmetna · Vendor application</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-head"><div class="wrap">
+  <div class="crumbs"><a href="index.html">Home</a> / Sell on Lahmetna</div>
+  <div class="eyebrow">For farms &amp; producers</div>
+  <h1 class="display" style="margin-top:8px">Sell on Lahmetna</h1>
+  <p class="muted" style="font-size:16px;max-width:620px;margin-top:10px">Reach thousands of kitchens that care where their food comes from. Apply below — our sourcing team reviews every application personally. Once approved, you’ll create your own vendor account and list products from your dashboard.</p>
+</div></div>
+
+<div class="wrap" style="max-width:920px;padding:36px 24px;display:grid;grid-template-columns:1.3fr 1fr;gap:40px" id="apply-grid">
+  <div>
+    <div class="card" style="padding:28px 30px">
+      <form id="apply-form">
+        <div class="field-row"><div><label class="label">Farm / business name</label><input class="field" id="farm_name" required></div><div><label class="label">Contact name</label><input class="field" id="contact_name" required></div></div>
+        <div class="field-row" style="margin-top:14px"><div><label class="label">Email</label><input class="field" id="email" type="email" required></div><div><label class="label">Phone</label><input class="field" id="phone" required placeholder="+20 1XX XXX XXXX"></div></div>
+        <div class="field-row" style="margin-top:14px"><div><label class="label">Location (governorate)</label><input class="field" id="location" required placeholder="e.g. Fayoum"></div><div><label class="label">Product categories</label><input class="field" id="categories" placeholder="e.g. Poultry, Eggs, Dairy"></div></div>
+        <div class="form-row"><label class="label">Tell us about your farm</label><textarea class="field" id="message" placeholder="How you raise your animals or grow your produce, your standards, capacity…"></textarea></div>
+        <div id="err" class="form-error" hidden></div>
+        <div id="ok" class="form-ok" hidden></div>
+        <button class="btn btn-primary btn-block" style="margin-top:20px;height:48px" id="submit">Submit application</button>
+      </form>
+    </div>
+  </div>
+  <div>
+    <div class="card" style="padding:24px;background:var(--bone-2);border:none">
+      <h3 class="display" style="font-size:18px">What we look for</h3>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:14px;font-size:14px;line-height:1.5">
+        <div class="row" style="gap:10px;align-items:flex-start"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" style="flex:none;margin-top:2px"><path d="M20 6L9 17l-5-5"/></svg><span>Pasture-raised animals, no routine antibiotics or growth hormones</span></div>
+        <div class="row" style="gap:10px;align-items:flex-start"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" style="flex:none;margin-top:2px"><path d="M20 6L9 17l-5-5"/></svg><span>Halal processing to order, with a reliable cold-chain</span></div>
+        <div class="row" style="gap:10px;align-items:flex-start"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" style="flex:none;margin-top:2px"><path d="M20 6L9 17l-5-5"/></svg><span>Produce harvested the same week it’s sold</span></div>
+        <div class="row" style="gap:10px;align-items:flex-start"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" style="flex:none;margin-top:2px"><path d="M20 6L9 17l-5-5"/></svg><span>Traceability — every order names its farm</span></div>
+      </div>
+      <div class="divider" style="margin:20px 0"></div>
+      <div style="font-size:13px;color:var(--ink-2);line-height:1.6">Already approved? <a href="signup.html?type=vendor" style="color:var(--cognac);font-weight:600">Create your vendor account →</a></div>
+    </div>
+  </div>
+</div>
+<div id="site-footer"></div>
+<script src="common.js"></script>
+<script>
+LH.boot().then(function(){
+  document.getElementById('apply-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var err = document.getElementById('err'), ok = document.getElementById('ok'); err.hidden = ok.hidden = true;
+    var g = function(id){ return document.getElementById(id).value.trim(); };
+    var body = { farm_name: g('farm_name'), contact_name: g('contact_name'), email: g('email'), phone: g('phone'), location: g('location'), categories: g('categories'), message: g('message') };
+    LH.POST('/api/applications', body)
+      .then(function(){ document.getElementById('apply-form').reset(); ok.innerHTML = '<strong>Application received.</strong> We’ll review it and email you at ' + LH.esc(body.email) + '. Once approved, create your vendor account from the link on the right.'; ok.hidden = false; ok.scrollIntoView({behavior:'smooth',block:'center'}); })
+      .catch(function(e){ err.textContent = e.message; err.hidden = false; });
+  });
+});
+</script>
+</body>
+</html>

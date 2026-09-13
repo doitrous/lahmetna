@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign up · Lahmetna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1 class="display" id="title">Create your account</h1>
+    <p class="muted" style="font-size:14px" id="sub">Shop natural meat and fresh farm produce.</p>
+    <form id="signup-form">
+      <div class="form-row"><label class="label" for="name">Full name</label><input class="field" id="name" required autocomplete="name"></div>
+      <div class="form-row"><label class="label" for="email">Email</label><input class="field" id="email" type="email" required autocomplete="email"></div>
+      <div class="form-row" id="phone-row"><label class="label" for="phone">Phone</label><input class="field" id="phone" autocomplete="tel" placeholder="+20 1XX XXX XXXX"></div>
+      <div class="form-row"><label class="label" for="password">Password</label><input class="field" id="password" type="password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters"></div>
+      <div id="err" class="form-error" hidden></div>
+      <button class="btn btn-primary btn-block" style="margin-top:20px;height:48px" id="submit">Create account</button>
+    </form>
+    <div class="switch-line">Already have an account? <a href="login.html">Log in</a></div>
+    <div class="switch-line" id="vendor-note" style="margin-top:8px">Want to sell on Lahmetna? <a href="apply.html">Apply here first</a></div>
+  </div>
+</div>
+<div id="site-footer"></div>
+<script src="common.js"></script>
+<script>
+LH.boot().then(function(){
+  var isVendor = new URLSearchParams(location.search).get('type') === 'vendor';
+  if (isVendor) {
+    document.getElementById('title').textContent = 'Set up your vendor account';
+    document.getElementById('sub').innerHTML = 'Use the email address from your <strong>approved</strong> application.';
+    document.getElementById('phone-row').hidden = true;
+    document.getElementById('submit').textContent = 'Create vendor account';
+    document.getElementById('vendor-note').innerHTML = 'Not approved yet? <a href="apply.html">Apply to sell</a>';
+  }
+  document.getElementById('signup-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var err = document.getElementById('err'); err.hidden = true;
+    var body = { name: document.getElementById('name').value.trim(), email: document.getElementById('email').value.trim(), phone: document.getElementById('phone').value.trim(), password: document.getElementById('password').value };
+    var url = isVendor ? '/api/auth/vendor-signup' : '/api/auth/signup';
+    LH.POST(url, body)
+      .then(function(d){ location.href = d.user.role === 'vendor' ? 'vendor.html' : 'account.html'; })
+      .catch(function(e){ err.textContent = e.message; err.hidden = false; });
+  });
+});
+</script>
+</body>
+</html>

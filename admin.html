@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin console · Lahmetna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-head"><div class="wrap"><div class="eyebrow">Admin console</div><h1 class="display" style="margin-top:6px">Lahmetna operations</h1></div></div>
+<main class="dash">
+  <nav class="dash-nav">
+    <button data-tab="overview" class="active">Overview</button>
+    <button data-tab="orders">Orders</button>
+    <button data-tab="catalog">Catalog</button>
+    <button data-tab="vendors">Vendors</button>
+    <button data-tab="customers">Customers</button>
+    <button data-tab="applications">Applications</button>
+    <button data-tab="support">Support</button>
+    <button data-tab="payouts">Payouts</button>
+    <button data-tab="subscriptions">Subscriptions</button>
+    <button data-tab="marketing">Marketing</button>
+    <button data-tab="settings">Settings</button>
+  </nav>
+  <div id="panel"><div class="muted">Loading…</div></div>
+</main>
+<div id="site-footer"></div>
+<script src="common.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
