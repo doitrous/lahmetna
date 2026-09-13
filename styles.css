@@ -193,6 +193,8 @@ input[type=checkbox],input[type=radio]{accent-color:var(--burgundy);width:19px;h
 .utility{background:var(--burgundy);color:#fff;font-size:14px}
 .utility .wrap{height:auto;min-height:34px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:6px}
 .utility a{color:#ead9df}.utility a:hover{color:#fff}
+/* wrapper must not box the sticky header, or it un-sticks the moment the wrapper scrolls past */
+#site-header{display:contents}
 .header{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid var(--line)}
 .header .bar{min-height:92px;display:flex;align-items:center;gap:26px}
 .logo{display:flex;flex-direction:row;align-items:center;gap:11px;flex-shrink:0;font-family:var(--font-brand);font-weight:700;line-height:1;color:var(--burgundy)}
@@ -444,3 +446,17 @@ input[type=checkbox],input[type=radio]{accent-color:var(--burgundy);width:19px;h
 .mnav.show{transform:translateX(0)}
 .mnav a{padding:14px 4px;font-family:var(--font-ui);font-weight:600;font-size:19px;border-bottom:1px solid var(--line-2);color:var(--ink)}
 .mnav .brand{color:var(--burgundy)}
+
+/* ---- Arabic / RTL ---- */
+[dir=rtl]{--font-ui:'Tajawal',system-ui,-apple-system,Arial,sans-serif;--font-display:'Tajawal',system-ui,sans-serif}
+[dir=rtl] body{font-family:var(--font-ui)}
+/* negative letter-spacing breaks Arabic letter-joining — reset it everywhere text is Arabic */
+[dir=rtl] h1,[dir=rtl] h2,[dir=rtl] h3,[dir=rtl] .h2,[dir=rtl] .display,[dir=rtl] .eyebrow,[dir=rtl] .btn,[dir=rtl] .chip,[dir=rtl] .name{letter-spacing:normal}
+[dir=rtl] h1,[dir=rtl] .h2,[dir=rtl] .display{font-weight:700}
+/* keep the Latin wordmark in its serif face and direction */
+[dir=rtl] .logo .wm,[dir=rtl] .brand{font-family:'Fraunces',Georgia,serif}
+/* mirror the off-canvas panels so they hide/slide from the RTL side (and don't nudge the scroll area) */
+[dir=rtl] .drawer{right:auto;left:0;transform:translateX(-100%)}
+[dir=rtl] .drawer.show{transform:translateX(0)}
+[dir=rtl] .mnav{transform:translateX(100%)}
+[dir=rtl] .mnav.show{transform:translateX(0)}

@@ -15,6 +15,139 @@ window.LH = (function () {
   }
   function POST(p, b) { return api(p, { method: 'POST', body: b || {} }); }
 
+  /* ---------- i18n (Arabic / RTL) ---------- */
+  var lang = 'en';
+  try { if (localStorage.getItem('lah_lang') === 'ar') lang = 'ar'; } catch (e) {}
+  if (lang === 'ar') { try { document.documentElement.lang = 'ar'; document.documentElement.dir = 'rtl'; } catch (e) {} }
+
+  // English text -> Arabic. Drives both t() and the DOM text-node pass.
+  var AR = {
+    // top bar + chrome
+    'Free cold-chain delivery over EGP 800 · Cairo & Giza': 'توصيل مبرّد مجاني للطلبات فوق ٨٠٠ ج.م · القاهرة والجيزة',
+    'Track order': 'تتبّع الطلب', 'Sell on Lahmetna': 'بِع على لحمتنا', 'العربية': 'English',
+    'Log in': 'تسجيل الدخول', 'Cart ·': 'السلة ·', 'Menu': 'القائمة',
+    'Search ribeye, free-range eggs, heirloom tomatoes…': 'ابحث عن ريب آي، بيض بلدي، طماطم…',
+    // nav
+    'Shop all': 'كل المنتجات', 'Beef': 'لحم بقري', 'Lamb & Goat': 'ضأن وماعز', 'Poultry': 'دواجن',
+    'Vegetables': 'خضروات', 'Fruit': 'فاكهة', 'Livestock': 'مواشٍ حية', 'Reviews': 'التقييمات', 'FAQ': 'الأسئلة الشائعة',
+    "This week's harvest": 'حصاد هذا الأسبوع', 'Eggs': 'بيض', 'Dairy': 'ألبان', 'Honey': 'عسل', 'All': 'الكل',
+    // cart drawer
+    'Your cart': 'سلة التسوق', 'Your cart is empty.': 'سلة التسوق فارغة.',
+    'Fresh from the farm is a click away.': 'الطازج من المزرعة على بُعد نقرة.',
+    'Subtotal': 'الإجمالي الفرعي', 'Checkout': 'إتمام الشراء',
+    'Delivery calculated at checkout · free over EGP 800': 'تُحتسب رسوم التوصيل عند الدفع · مجاني فوق ٨٠٠ ج.م',
+    // account menu
+    'My account': 'حسابي', 'Order history': 'سجل الطلبات', 'Addresses': 'العناوين', 'Support': 'الدعم',
+    'Log out': 'تسجيل الخروج', 'Vendor dashboard': 'لوحة البائع', 'Orders': 'الطلبات', 'Earnings': 'الأرباح',
+    'Admin console': 'لوحة الإدارة', 'Support queue': 'قائمة الدعم', 'Payouts': 'المدفوعات', 'Settings': 'الإعدادات',
+    // footer
+    'The marketplace for naturally raised meat and fresh farm produce, direct from named farms across Egypt.': 'سوق اللحوم المُربّاة طبيعيًا والمنتجات الطازجة، مباشرة من مزارع معروفة في كل أنحاء مصر.',
+    'Cash on delivery': 'الدفع عند الاستلام', 'Shop': 'تسوّق', 'Company': 'الشركة', 'Help': 'المساعدة',
+    'Poultry & Eggs': 'دواجن وبيض', 'Vegetables & Fruit': 'خضروات وفاكهة', 'How it works': 'كيف نعمل',
+    'Sustainability': 'الاستدامة', 'Careers': 'الوظائف', 'FAQs': 'الأسئلة الشائعة',
+    'Delivery & cold-chain': 'التوصيل والتبريد', 'Returns & refunds': 'الإرجاع والاسترداد',
+    '© 2026 Lahmetna. Raised right, priced fair.': '© ٢٠٢٦ لحمتنا. تربية سليمة وسعر عادل.',
+    'Privacy': 'الخصوصية', 'Terms': 'الشروط', 'Cookies': 'ملفات تعريف الارتباط', 'Halal certification': 'شهادة الحلال',
+    // hero
+    'Farm-direct · raised right, priced fair': 'من المزرعة مباشرة · تربية سليمة وسعر عادل',
+    'real meat.': 'لحم أصلي.', 'no middlemen.': 'بدون وسطاء.', 'delivered.': 'يصل لبابك.',
+    'The marketplace for naturally raised meat, live animals and fresh farm produce — sourced from named farms, cut to order, and carried cold to your door.': 'سوق اللحوم المُربّاة طبيعيًا والحيوانات الحية والمنتجات الطازجة — من مزارع معروفة، تُقطّع حسب الطلب، وتصل مبرّدة إلى باب بيتك.',
+    'Shop the farm': 'تسوّق من المزرعة',
+    '40+ partner farms · 12k kitchens served · 4.9★ average rating': 'أكثر من ٤٠ مزرعة شريكة · خدمنا ١٢ ألف مطبخ · تقييم ٤.٩★',
+    'FRESH THIS': 'طازج هذا', 'WEEK': 'الأسبوع', 'farm harvest': 'حصاد المزرعة',
+    // trust strip
+    'Pasture-raised': 'تربية بالمرعى', 'Grass-fed, no routine antibiotics': 'تغذية طبيعية، بلا مضادات حيوية روتينية',
+    'Halal & hand-cut': 'حلال وتقطيع يدوي', 'Processed to order, never frozen twice': 'يُجهّز حسب الطلب، بلا تجميد مكرّر',
+    'Next-day cold-chain': 'توصيل مبرّد في اليوم التالي', 'Sealed, chilled, tracked end-to-end': 'مغلّف ومبرّد ومتتبَّع بالكامل',
+    'Traceable sourcing': 'مصدر موثّق', 'Every order names its farm': 'كل طلب يذكر مزرعته',
+    // categories section
+    'Shop by farm line': 'تسوّق حسب فئة المزرعة', 'Everything a fresh farm makes': 'كل ما تنتجه مزرعة طازجة',
+    'Browse all products': 'تصفّح كل المنتجات', 'The market': 'السوق', 'Fresh this week': 'طازج هذا الأسبوع',
+    'Dry-aged & fresh': 'مُعتّق وطازج', 'Free-range': 'تربية حرة', 'Laid this week': 'بيض هذا الأسبوع',
+    'Milk, labneh, cheese': 'حليب، لبنة، جبن', 'Picked daily': 'يُقطف يوميًا', 'In season': 'في الموسم',
+    'Raw honey, pantry': 'عسل خام ومؤن', 'Live & whole animals': 'حيوانات حية وكاملة',
+    // product cards
+    'Add': 'أضف', 'Sold out': 'نفد', 'New': 'جديد', 'Show more': 'عرض المزيد',
+    // our farms
+    'Our farms': 'مزارعنا', 'Every order traces back': 'كل طلب يعود', 'to a farm you can name': 'إلى مزرعة تعرف اسمها',
+    'Bonkam, Elreef and Elwady raise their animals on open pasture and grow produce without the industrial shortcuts. You see the farm, the cut date, and the hands behind it — on every label.': 'مزارع بونكام والريف والوادي تربّي حيواناتها في مراعٍ مفتوحة وتزرع دون اختصارات صناعية. ترى المزرعة وتاريخ التقطيع والأيادي التي وراءه — على كل ملصق.',
+    'Open pasture': 'مرعى مفتوح', 'No growth hormones': 'بلا هرمونات نمو', 'Same-week harvest': 'حصاد نفس الأسبوع',
+    'Become a vendor': 'كن بائعًا',
+    // reviews + faq + newsletter
+    'Loved by 12,000+ kitchens': 'يحبّه أكثر من ١٢٬٠٠٠ مطبخ', '4.9 · 3,180+ verified orders': '٤.٩ · أكثر من ٣٬١٨٠ طلب موثّق',
+    'Help centre': 'مركز المساعدة', 'Frequently asked questions': 'الأسئلة الشائعة',
+    'Everything about sourcing, live animals, delivery, storage and returns. Still stuck? Our team answers within the hour, 9am–9pm.': 'كل ما يخص المصدر والحيوانات الحية والتوصيل والتخزين والإرجاع. ما زلت محتارًا؟ فريقنا يرد خلال ساعة، من ٩ صباحًا حتى ٩ مساءً.',
+    'Newsletter': 'النشرة البريدية', 'Fresh drops, every Thursday': 'وصل جديد كل خميس',
+    "What's in season, what's just been cut, and members-only pricing. No spam — one email a week.": 'ما هو في الموسم، وما تم تقطيعه للتو، وأسعار خاصة للأعضاء. بلا إزعاج — رسالة واحدة أسبوعيًا.',
+    'Subscribe': 'اشترك', 'you@email.com': 'بريدك الإلكتروني',
+    // common labels (auth / checkout / product)
+    'Home': 'الرئيسية', 'In stock': 'متوفر', 'Add to cart': 'أضف إلى السلة', 'Continue': 'متابعة',
+    'Create account': 'إنشاء حساب', 'Please log in to check out': 'سجّل الدخول لإتمام الشراء'
+  };
+
+  // product id -> Arabic display name
+  var PRODAR = {
+    ribeye: 'ريب آي مُعتّق · ٣٠٠ج', ground: 'لحم بقري مفروم · ٥٠٠ج', shortrib: 'ضلوع بقري قصيرة · ٧٠٠ج',
+    tenderloin: 'فيليه بقري · ٤٠٠ج', brisket: 'صدر بقري كامل · ١.٥كجم', lambchop: 'ريش ضأن · ٤٠٠ج',
+    goatcut: 'قطع ماعز للطبخ · ١كجم', lambleg: 'فخذ ضأن كامل · ~٢كجم', lambmince: 'لحم ضأن مفروم · ٥٠٠ج',
+    chicken: 'دجاجة بلدي كاملة · ~١.٤كجم', breast: 'صدور دجاج · ٥٠٠ج', wings: 'أجنحة دجاج · ٧٠٠ج',
+    duck: 'بطة كاملة · ~١.٨كجم', eggs30: 'بيض بلدي · ٣٠ بيضة', duckeggs: 'بيض بط · ١٢ بيضة',
+    quaileggs: 'بيض سمّان · ٢٤ بيضة', labneh: 'لبنة طازجة · ٥٠٠ج', milk: 'حليب بقري خام · ١ لتر',
+    feta: 'جبن أبيض · ٤٠٠ج', ghee: 'سمن بلدي · ٥٠٠ج', yogurt: 'زبادي بلدي · ٩٠٠ج', butter: 'زبدة مخمّرة · ٢٥٠ج',
+    tomato: 'طماطم بلدي · ١كجم', greens: 'صندوق خضار ورقية', potato: 'بطاطس بلدي · ٢كجم', onion: 'بصل أحمر · ١كجم',
+    pepper: 'فلفل ألوان · ٧٥٠ج', cucumber: 'خيار بلدي · ١كجم', fruitbox: 'صندوق فاكهة موسمية',
+    oranges: 'برتقال بلدي · ٢كجم', mango: 'مانجو مصري · ١.٥كجم', dates: 'بلح طازج · ١كجم', guava: 'جوافة · ١كجم',
+    honey: 'عسل نحل خام · ٥٠٠ج', blackhoney: 'عسل أسود · ٨٠٠ج', tahini: 'طحينة · ٤٠٠ج',
+    oliveoil: 'زيت زيتون بكر · ٧٥٠مل', olives: 'زيتون أخضر · ٥٠٠ج', livesheep: 'خروف بلدي حي',
+    livegoat: 'ماعز بلدي حي', livecalf: 'عجل حي (بتلو)', wholelamb: 'خروف كامل مذبوح',
+    'nh-beef': 'قطعة لحم بقري (عينة) · ٥٠٠ج', 'nh-lamb': 'قطعة ضأن (عينة) · ٥٠٠ج',
+    'nh-poultry': 'منتج دواجن (عينة) · ٥٠٠ج', 'nh-eggs': 'بيض بلدي (عينة) · ١٢ بيضة',
+    'nh-dairy': 'منتج ألبان (عينة) · ٥٠٠ج', 'nh-veg': 'صندوق خضار (عينة)', 'nh-fruit': 'صندوق فاكهة (عينة)',
+    'nh-honey': 'عسل خام (عينة) · ٥٠٠ج', 'nh-livestock': 'حيوان حي (عينة)'
+  };
+
+  // English FAQ question -> Arabic {q,a}
+  var FAQAR = {
+    'Where does the meat and produce come from?': { q: 'من أين تأتي اللحوم والمنتجات؟', a: 'كل شيء يُورَّد مباشرة من مزارع شريكة موثّقة في الريف المصري. كل طلب يذكر المزرعة وتاريخ التقطيع على ملصقه، حتى تتمكن دائمًا من تتبّع ما تأكله إلى حيث تمت تربيته أو زراعته.' },
+    'Is the meat halal?': { q: 'هل اللحوم حلال؟', a: 'نعم. كل اللحوم والدواجن حلال وتُجهّز حسب الطلب على يد جزّارين معتمدين. لا نجمّد مرتين أبدًا، وشهادة الحلال متاحة في تذييل كل صفحة.' },
+    'How do live animals and slaughter work?': { q: 'كيف تعمل الحيوانات الحية والذبح؟', a: 'تُسعّر الحيوانات الحية بالوزن. عند الدفع يمكنك اختيار الذبح والتقطيع في المزرعة (حلال، تقطيع يدوي حسب طلبك) مع توصيل مبرّد، أو استلام الحيوان حيًّا. وهو شائع بشكل خاص في العيد — اطلب مبكرًا فالكمية محدودة.' },
+    'How does delivery and the cold-chain work?': { q: 'كيف يعمل التوصيل وسلسلة التبريد؟', a: 'الطلبات قبل السادسة مساءً تُسلَّم في اليوم التالي داخل القاهرة والجيزة. كل شيء يُنقل مغلّفًا ومبرّدًا في صناديق معزولة ومتتبَّعة الحرارة. التوصيل مجاني فوق ٨٠٠ ج.م.' },
+    'How should I store what I receive?': { q: 'كيف أخزّن ما أستلمه؟', a: 'اللحوم الطازجة تدوم ٣–٤ أيام في الثلاجة وحتى ٣ أشهر في الفريزر — قسّمها قبل التجميد. البيض والألبان مباشرة إلى الثلاجة؛ والخضار الورقية تدوم أفضل ملفوفة بخفة في درج الحفظ.' },
+    'What if something arrives below standard?': { q: 'ماذا لو وصل شيء دون المستوى؟', a: 'الطزاجة مضمونة. إذا وصل أي شيء دافئًا أو تالفًا أو دون المستوى، راسلنا بصورة خلال ٢٤ ساعة وسنسترد المبلغ أو نستبدله — دون حاجة لإرجاع المنتج.' },
+    'Which payment methods do you accept?': { q: 'ما وسائل الدفع المقبولة؟', a: 'نقبل بطاقات فيزا وماستركارد وميزة عبر PayTabs، مزوّد الدفع الآمن لدينا، إضافة إلى الدفع عند الاستلام. تُدار بيانات البطاقة عبر PayTabs ولا تُخزَّن على خوادمنا أبدًا.' },
+    'Can I sell my farm’s produce on Lahmetna?': { q: 'هل يمكنني بيع منتجات مزرعتي على لحمتنا؟', a: 'نعم — استخدم «بِع على لحمتنا» للتقديم. يراجع فريق التوريد كل طلب شخصيًا؛ وبعد الموافقة تنشئ حساب بائع خاصًا بك وتُدرج منتجاتك من لوحتك.' }
+  };
+
+  function t(en) { return (lang === 'ar' && AR[en]) ? AR[en] : en; }
+  function setLang(l) { try { localStorage.setItem('lah_lang', l); } catch (e) {} location.reload(); }
+  function tFaq(list) { return (lang !== 'ar') ? list : (list || []).map(function (f) { var a = FAQAR[f.q]; return a ? { q: a.q, a: a.a } : f; }); }
+  function injectArFont() {
+    if (document.getElementById('lh-ar-font')) return;
+    var l = document.createElement('link'); l.id = 'lh-ar-font'; l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap';
+    document.head.appendChild(l);
+  }
+  // translate exact-match text nodes + placeholders under a root (idempotent — Arabic text won't re-match)
+  function translateNode(root) {
+    var SKIP = { SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, TEXTAREA: 1 };
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function (n) {
+      if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      var p = n.parentElement; if (!p || SKIP[p.tagName]) return NodeFilter.FILTER_REJECT;
+      if (p.closest('[dir="ltr"],[data-noi18n],.price,.stars')) return NodeFilter.FILTER_REJECT;
+      return AR[n.nodeValue.trim()] ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    } });
+    var hits = [], n; while ((n = w.nextNode())) hits.push(n);
+    hits.forEach(function (nd) { var k = nd.nodeValue.trim(); nd.nodeValue = nd.nodeValue.replace(k, AR[k]); });
+    (root.querySelectorAll ? root : document).querySelectorAll('[placeholder]').forEach(function (el) {
+      var v = el.getAttribute('placeholder'); if (AR[v]) el.setAttribute('placeholder', AR[v]);
+    });
+  }
+  function applyLang(root) {
+    if (lang !== 'ar') return;
+    document.documentElement.lang = 'ar'; document.documentElement.dir = 'rtl';
+    injectArFont(); translateNode(root || document.body);
+  }
+
   /* presentation maps */
   /* round category-tile images (the fun farm photos + real produce shots) */
   var IMG = { Beef: 'assets/cat/beef.webp', 'Lamb & Goat': 'assets/cat/lamb.webp', Poultry: 'assets/cat/poultry.webp', Eggs: 'assets/cat/eggs.webp', Dairy: 'assets/cat/dairy.webp', Vegetables: 'assets/cat/veg.webp', Fruit: 'assets/cat/fruit.webp', Honey: 'assets/cat/honey.webp', Livestock: 'assets/cat/livestock.webp' };
@@ -40,7 +173,7 @@ window.LH = (function () {
   var byId = {}, productsLoaded = false;
   function getProducts() {
     if (productsLoaded) return Promise.resolve(byId);
-    return api('/api/products').then(function (list) { byId = {}; list.forEach(function (p) { byId[p.id] = p; }); productsLoaded = true; LH.byId = byId; return byId; });
+    return api('/api/products').then(function (list) { byId = {}; list.forEach(function (p) { if (lang === 'ar' && PRODAR[p.id]) p.name = PRODAR[p.id]; byId[p.id] = p; }); productsLoaded = true; LH.byId = byId; return byId; });
   }
 
   /* cart (localStorage) */
@@ -104,19 +237,19 @@ window.LH = (function () {
     return '' +
     '<div class="utility"><div class="wrap">' +
       '<div class="row" style="gap:8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--champagne)" stroke-width="1.6"><path d="M3 7h13v9H3z"/><path d="M16 10h3l2 3v3h-5z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg><span style="opacity:.9">Free cold-chain delivery over EGP 800 · Cairo &amp; Giza</span></div>' +
-      '<div class="row" style="gap:22px;opacity:.9"><a href="#">Track order</a><a href="apply.html">Sell on Lahmetna</a><a href="#">EG · العربية</a></div>' +
+      '<div class="row" style="gap:22px;opacity:.9"><a href="#">Track order</a><a href="apply.html">Sell on Lahmetna</a><a href="#" id="lh-lang" dir="ltr">' + (lang === 'ar' ? 'EN · English' : 'AR · العربية') + '</a></div>' +
     '</div></div>' +
     '<header class="header"><div class="wrap"><div class="bar">' +
       '<button class="icon-btn hamburger" id="lh-menu" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>' +
       '<a href="index.html" class="logo" dir="ltr"><img class="logo-mark" src="assets/logo.png" alt="Lahmetna" width="40" height="40" onerror="this.style.display=\'none\'"><span class="logo-txt"><span class="wm">lahmetna<span class="dot">.</span></span><span class="cap">YOUR EVERYDAY FARM MARKET</span></span></a>' +
       '<form class="search" id="lh-search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#917b85" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input type="search" name="q" placeholder="Search ribeye, free-range eggs, heirloom tomatoes…" aria-label="Search"></form>' +
-      '<div class="row" style="margin-left:auto;gap:16px">' +
+      '<div class="row" style="margin-inline-start:auto;gap:16px">' +
         '<div class="acct" id="lh-acct"></div>' +
         '<button class="btn btn-ink btn-sm" id="lh-cart-btn" style="gap:8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M4 7h15l-1.5 9H6L4 7z"/><path d="M4 7l-.8-3H1"/><circle cx="8" cy="20" r="1.4" fill="#fff" stroke="none"/><circle cx="16" cy="20" r="1.4" fill="#fff" stroke="none"/></svg>Cart · <span id="lh-cart-count">0</span></button>' +
       '</div>' +
     '</div></div>' +
     '<div class="wrap"><nav class="nav" id="lh-nav">' + NAV.map(function (n) { return '<a href="' + n.href + '"' + (n.k ? ' data-nav="' + n.k + '"' : '') + '>' + n.l + '</a>'; }).join('') +
-      '<span style="margin-left:auto;font-size:13px;font-weight:600;color:var(--cognac)" class="row"><span class="tag-dot"></span>This week\'s harvest</span></nav></div>' +
+      '<span style="margin-inline-start:auto;font-size:13px;font-weight:600;color:var(--cognac)" class="row"><span class="tag-dot"></span>This week\'s harvest</span></nav></div>' +
     '</header>';
   }
   function acctHTML() {
@@ -187,6 +320,9 @@ window.LH = (function () {
     // condense the sticky header into a compact bar once scrolled (search, account & cart stay pinned)
     var hdr = h.querySelector('.header');
     if (hdr) { var onScroll = function () { hdr.classList.toggle('compact', window.scrollY > 140); }; window.addEventListener('scroll', onScroll, { passive: true }); onScroll(); }
+    // language toggle
+    var lg = $('#lh-lang'); if (lg) lg.addEventListener('click', function (e) { e.preventDefault(); setLang(lang === 'ar' ? 'en' : 'ar'); });
+    applyLang();
     updateBadge();
   }
   function renderAcct() {
@@ -252,6 +388,7 @@ window.LH = (function () {
     get cart() { return cart; }, cartArray: cartArray, addToCart: addToCart, cartQty: cartQty, cartTotal: cartTotal, clearCart: clearCart, renderCart: renderCart,
     loadMe: loadMe, logout: logout, get me() { return me; },
     boot: boot, mountChrome: mountChrome, open: open, close: close,
+    get lang() { return lang; }, t: t, setLang: setLang, applyLang: applyLang, tFaq: tFaq,
     card: card, st: st, planBadge: planBadge, ticketThread: ticketThread, tabs: tabs, modal: modal
   };
 })();

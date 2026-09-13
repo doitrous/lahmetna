@@ -60,7 +60,8 @@
     var box = document.getElementById('shop-more');
     if (!box) { box = document.createElement('div'); box.id = 'shop-more'; box.style.cssText = 'text-align:center;margin-top:30px'; $('#product-grid').after(box); }
     var more = list.length - visible.length;
-    box.innerHTML = more > 0 ? '<button class="btn btn-outline" data-showmore>Show more · ' + more + ' more</button>' : '';
+    box.innerHTML = more > 0 ? '<button class="btn btn-outline" data-showmore>' + LH.t('Show more') + ' · ' + more + '</button>' : '';
+    if (LH.applyLang) LH.applyLang();
   }
   function renderFilters() {
     $('#filters').innerHTML = CATS.map(function (c) { return '<button class="chip" data-filter="' + esc(c) + '" aria-pressed="' + (c === activeFilter) + '">' + (c === 'all' ? 'All' : esc(c)) + '</button>'; }).join('');
@@ -97,6 +98,7 @@
 
     $('#cat-grid').innerHTML = CAT_TILES.map(tile).join('');
     renderFilters();
+    if (LH.applyLang) LH.applyLang();
 
     LH.getProducts().then(function (byId) {
       products = Object.keys(byId).map(function (k) { return byId[k]; }).sort(function (a, b) { return (a.sort - b.sort) || (a.created < b.created ? -1 : 1); });
@@ -105,7 +107,7 @@
     });
 
     api('/api/reviews').then(function (rv) { $('#reviews-list').innerHTML = rv.slice(0, 3).map(reviewCard).join(''); }).catch(function () {});
-    api('/api/faqs').then(renderFaq).catch(function () {});
+    api('/api/faqs').then(function (l) { renderFaq(LH.tFaq(l)); }).catch(function () {});
 
     // interactions
     document.addEventListener('click', function (e) {
