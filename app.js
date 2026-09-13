@@ -9,6 +9,11 @@
     { c: 'Fruit', s: 'In season' }, { c: 'Honey', s: 'Raw honey, pantry' }, { c: 'Livestock', s: 'Live & whole animals' }
   ];
   var products = [], activeFilter = 'all', search = '';
+  var PAGE = 20, shown = PAGE; // 5 rows × 4 columns before "Show more"
+
+  // persist the shop view (filter / search / expanded) so a reload keeps what the customer was browsing
+  function saveView() { try { sessionStorage.setItem('lah_shop', JSON.stringify({ f: activeFilter, q: search, all: shown === Infinity })); } catch (e) {} }
+  function loadView() { try { return JSON.parse(sessionStorage.getItem('lah_shop') || 'null'); } catch (e) { return null; } }
 
   function priceLabel(p) { return p.type === 'livestock' ? 'from ' + money(p.price) : money(p.price); }
 
@@ -26,7 +31,7 @@
   document.addEventListener('lh:cart', refreshAddboxes);
 
   function tile(t) {
-    var m = '<img src="' + (LH.IMG[t.c] || 'assets/farm-foods.jpg') + '" alt="' + esc(t.c) + '">';
+    var m = '<img src="' + (LH.IMG[t.c] || 'assets/farm-foods.webp') + '" alt="' + esc(t.c) + '">';
     return '<a class="tile" data-filter="' + esc(t.c) + '">' + m + '<div class="scrim"></div><div class="lbl"><div class="t">' + esc(t.c) + '</div><div class="c">' + esc(t.s) + '</div></div></a>';
   }
   function card(p) {
@@ -49,16 +54,21 @@
       if (search && (p.name + ' ' + p.cat + ' ' + p.origin).toLowerCase().indexOf(search) < 0) return false;
       return true;
     });
-    $('#product-grid').innerHTML = list.map(card).join('') || '<div class="muted" style="grid-column:1/-1;padding:40px 0">No products match.</div>';
+    var visible = list.slice(0, shown);
+    $('#product-grid').innerHTML = visible.map(card).join('') || '<div class="muted" style="grid-column:1/-1;padding:40px 0">No products match.</div>';
     $('#shop-count').textContent = list.length + ' product' + (list.length === 1 ? '' : 's') + (activeFilter === 'all' ? '' : ' in ' + activeFilter) + (search ? ' · “' + search + '”' : '');
+    var box = document.getElementById('shop-more');
+    if (!box) { box = document.createElement('div'); box.id = 'shop-more'; box.style.cssText = 'text-align:center;margin-top:30px'; $('#product-grid').after(box); }
+    var more = list.length - visible.length;
+    box.innerHTML = more > 0 ? '<button class="btn btn-outline" data-showmore>Show more · ' + more + ' more</button>' : '';
   }
   function renderFilters() {
     $('#filters').innerHTML = CATS.map(function (c) { return '<button class="chip" data-filter="' + esc(c) + '" aria-pressed="' + (c === activeFilter) + '">' + (c === 'all' ? 'All' : esc(c)) + '</button>'; }).join('');
   }
   function setFilter(cat) {
-    activeFilter = cat;
+    activeFilter = cat; shown = PAGE;
     document.querySelectorAll('#filters .chip').forEach(function (ch) { ch.setAttribute('aria-pressed', ch.dataset.filter === cat); });
-    renderGrid();
+    saveView(); renderGrid();
   }
 
   function reviewCard(r) {
@@ -79,8 +89,11 @@
 
   LH.boot({ active: activeFilter === 'all' ? 'all' : null }).then(function () {
     var params = new URLSearchParams(location.search);
-    if (params.get('cat')) activeFilter = params.get('cat');
-    if (params.get('q')) search = params.get('q').toLowerCase();
+    var saved = loadView();
+    if (saved) { activeFilter = saved.f || 'all'; search = saved.q || ''; if (saved.all) shown = Infinity; }
+    // an explicit ?cat / ?q in the URL wins over the saved view
+    if (params.get('cat')) { activeFilter = params.get('cat'); shown = PAGE; }
+    if (params.get('q')) { search = params.get('q').toLowerCase(); shown = PAGE; }
 
     $('#cat-grid').innerHTML = CAT_TILES.map(tile).join('');
     renderFilters();
@@ -96,8 +109,9 @@
 
     // interactions
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-add],[data-filter]'); if (!t) return;
+      var t = e.target.closest('[data-add],[data-filter],[data-showmore]'); if (!t) return;
       if (t.dataset.add) { e.preventDefault(); LH.addToCart(t.dataset.add); }
+      else if (t.hasAttribute('data-showmore')) { e.preventDefault(); shown = Infinity; saveView(); renderGrid(); }
       else if (t.hasAttribute('data-filter')) { e.preventDefault(); setFilter(t.dataset.filter); document.getElementById('shop').scrollIntoView({ behavior: 'smooth' }); }
     });
     $('#faq-list').addEventListener('click', function (e) {

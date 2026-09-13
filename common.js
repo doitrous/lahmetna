@@ -17,12 +17,12 @@ window.LH = (function () {
 
   /* presentation maps */
   /* round category-tile images (the fun farm photos + real produce shots) */
-  var IMG = { Beef: 'assets/cat/beef.jpg', 'Lamb & Goat': 'assets/cat/lamb.jpg', Poultry: 'assets/cat/poultry.jpg', Eggs: 'assets/cat/eggs.jpg', Dairy: 'assets/cat/dairy.jpg', Vegetables: 'assets/cat/veg.jpg', Fruit: 'assets/cat/fruit.jpg', Honey: 'assets/cat/honey.jpg', Livestock: 'assets/cat/livestock.jpg' };
+  var IMG = { Beef: 'assets/cat/beef.webp', 'Lamb & Goat': 'assets/cat/lamb.webp', Poultry: 'assets/cat/poultry.webp', Eggs: 'assets/cat/eggs.webp', Dairy: 'assets/cat/dairy.webp', Vegetables: 'assets/cat/veg.webp', Fruit: 'assets/cat/fruit.webp', Honey: 'assets/cat/honey.webp', Livestock: 'assets/cat/livestock.webp' };
   var TINT = {};
   /* category-level fallback photo when a product's own image is missing */
-  var CATIMG = { Beef: 'assets/steak.jpg', 'Lamb & Goat': 'assets/steak.jpg', Poultry: 'assets/chicken.jpg', Eggs: 'assets/eggs.jpg', Dairy: 'assets/dairy.jpg', Vegetables: 'assets/tomatoes.jpg', Fruit: 'assets/oranges.jpg', Honey: 'assets/honey.jpg', Livestock: 'assets/livestock.jpg' };
-  function prodImg(p) { return 'assets/products/' + p.id + '.jpg'; }
-  function fallbackImg(p) { return CATIMG[p.cat] || 'assets/farm-foods.jpg'; }
+  var CATIMG = { Beef: 'assets/steak.webp', 'Lamb & Goat': 'assets/steak.webp', Poultry: 'assets/chicken.webp', Eggs: 'assets/eggs.webp', Dairy: 'assets/dairy.webp', Vegetables: 'assets/tomatoes.webp', Fruit: 'assets/oranges.webp', Honey: 'assets/honey.webp', Livestock: 'assets/livestock.webp' };
+  function prodImg(p) { return 'assets/products/' + p.id + '.webp'; }
+  function fallbackImg(p) { return CATIMG[p.cat] || 'assets/farm-foods.webp'; }
   var ICONS = {
     Vegetables: '<svg width="54" height="54" viewBox="0 0 48 48" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 16c-2-6 2-10 8-10 0 6-3 10-8 10z"/><path d="M22 18c-3-2-8-1-10 3-2 5 0 14 6 18 5 3 11 1 14-4 3-6 1-14-4-17-2-1-4-1-6 0z"/></svg>',
     Fruit: '<svg width="54" height="54" viewBox="0 0 48 48" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 14c-6-3-14 0-15 8-1 9 6 18 12 18 2 0 2-1 3-1s1 1 3 1c6 0 13-9 12-18-1-8-9-11-15-8z"/><path d="M24 14c0-4 2-7 6-8"/></svg>',

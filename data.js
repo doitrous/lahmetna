@@ -21,7 +21,8 @@
     vendors: [
       { slug: 'bonkam', name: 'Bonkam Farm', location: 'Beheira', bio: 'Grass-fed cattle and raw pantry goods, raised on open pasture in the Nile Delta since 1998.' },
       { slug: 'elreef', name: 'Elreef Farm', location: 'Fayoum', bio: 'Free-range poultry and pasture-raised lamb and goat, hand-processed to order.' },
-      { slug: 'elwady', name: 'Elwady Farm', location: 'Minya', bio: 'Dairy, eggs and same-week vegetables and fruit, grown without industrial shortcuts.' }
+      { slug: 'elwady', name: 'Elwady Farm', location: 'Minya', bio: 'Dairy, eggs and same-week vegetables and fruit, grown without industrial shortcuts.' },
+      { slug: 'nileharvest', name: 'Nile Harvest', location: 'Aswan', bio: 'A new partner farm bringing a full range across every category — sample listings while their catalogue comes online.' }
     ],
 
     products: [
@@ -75,7 +76,17 @@
       L('livesheep', 'elreef', 'Live Baladi Sheep', 220, 45, 4.9, 34, 'Eid favourite', 12, 'A healthy live baladi sheep, priced by live weight. Choose farm slaughter and butchering at checkout, or collection.'),
       L('livegoat', 'elreef', 'Live Baladi Goat', 210, 35, 4.8, 20, '', 10, 'Live baladi goat raised on open pasture, priced by live weight with optional slaughter and cutting.'),
       L('livecalf', 'bonkam', 'Live Calf (Baby Beef)', 180, 120, 4.8, 14, '', 6, 'A grass-fed live calf sold by live weight — the most economical way to stock a freezer.'),
-      L('wholelamb', 'elreef', 'Whole Dressed Lamb', 300, 12, 4.9, 26, '', 16, 'A whole dressed lamb (skin off, cleaned), priced by dressed weight and cut to your spec.')
+      L('wholelamb', 'elreef', 'Whole Dressed Lamb', 300, 12, 4.9, 26, '', 16, 'A whole dressed lamb (skin off, cleaned), priced by dressed weight and cut to your spec.'),
+      // Nile Harvest — placeholder listings, one per category
+      p('nh-beef', 'nileharvest', 'Beef', 'Sample Beef Cut · 500g', '500g', 150, 4.5, 0, 'New', 25, 'Placeholder listing from Nile Harvest — a sample beef cut while the farm finalises its range.'),
+      p('nh-lamb', 'nileharvest', 'Lamb & Goat', 'Sample Lamb Cut · 500g', '500g', 200, 4.5, 0, 'New', 25, 'Placeholder listing from Nile Harvest — a sample lamb & goat cut while the farm finalises its range.'),
+      p('nh-poultry', 'nileharvest', 'Poultry', 'Sample Poultry Cut · 500g', '500g', 110, 4.5, 0, 'New', 25, 'Placeholder listing from Nile Harvest — a sample poultry product while the farm finalises its range.'),
+      p('nh-eggs', 'nileharvest', 'Eggs', 'Sample Free-Range Eggs · 12', '12 eggs', 55, 4.5, 0, 'New', 40, 'Placeholder listing from Nile Harvest — sample free-range eggs while the farm finalises its range.'),
+      p('nh-dairy', 'nileharvest', 'Dairy', 'Sample Dairy · 500g', '500g', 70, 4.5, 0, 'New', 30, 'Placeholder listing from Nile Harvest — a sample dairy product while the farm finalises its range.'),
+      p('nh-veg', 'nileharvest', 'Vegetables', 'Sample Vegetable Box', 'box', 55, 4.5, 0, 'New', 40, 'Placeholder listing from Nile Harvest — a sample vegetable box while the farm finalises its range.'),
+      p('nh-fruit', 'nileharvest', 'Fruit', 'Sample Fruit Box', 'box', 90, 4.5, 0, 'New', 40, 'Placeholder listing from Nile Harvest — a sample fruit box while the farm finalises its range.'),
+      p('nh-honey', 'nileharvest', 'Honey', 'Sample Raw Honey · 500g', '500g', 150, 4.5, 0, 'New', 30, 'Placeholder listing from Nile Harvest — a sample raw honey while the farm finalises its range.'),
+      L('nh-livestock', 'nileharvest', 'Sample Live Animal', 200, 40, 4.5, 0, 'New', 8, 'Placeholder livestock listing from Nile Harvest, priced by live weight, while the farm finalises its range.')
     ],
 
     // reviews link to a product id

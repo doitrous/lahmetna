@@ -119,15 +119,18 @@ h1,h2,.display,.h2{font-family:var(--font-display);font-weight:500;letter-spacin
 .wish{position:absolute;top:12px;right:12px;width:34px;height:34px;border:none;border-radius:var(--r-sm);background:rgba(255,255,255,.92);cursor:pointer;display:grid;place-items:center;color:var(--burgundy)}
 .wish:hover{background:#fff}
 
-/* ---- category tiles (round images, label below) ---- */
-.tile{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;font-weight:500;font-size:15px;cursor:pointer;height:auto;border-radius:0;overflow:visible;color:var(--ink)}
-.tile img,.tile .tinted{width:118px;height:118px;border-radius:50%;object-fit:cover;padding:0;border:1px solid transparent;background:var(--soft);transition:transform .2s,border-color .2s;display:grid;place-items:center;overflow:hidden}
-.tile:hover img,.tile:hover .tinted{transform:translateY(-3px);border-color:#d7c2cb}
-.tile:hover{color:var(--burgundy)}
-.tile .scrim{display:none}
-.tile .lbl{position:static;color:var(--ink)}
-.tile .lbl .t{font-family:var(--font-ui);font-weight:600;font-size:15px}
-.tile .lbl .c{font-size:12.5px;color:var(--ink-2);margin-top:1px}
+/* ---- category tiles (compact boxes, label overlaid) ---- */
+#cat-grid{grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:900px){#cat-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){#cat-grid{grid-template-columns:repeat(2,1fr)}}
+.tile{position:relative;display:block;height:150px;border-radius:var(--r-md);overflow:hidden;cursor:pointer;color:#fff;border:1px solid var(--line);background:var(--soft)}
+.tile img,.tile .tinted{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .3s var(--ease)}
+.tile:hover img,.tile:hover .tinted{transform:scale(1.05)}
+.tile:hover{color:#fff;box-shadow:var(--sh-2)}
+.tile .scrim{display:block;position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,8,12,0) 34%,rgba(40,12,22,.82) 100%)}
+.tile .lbl{position:absolute;left:12px;right:12px;bottom:10px;text-align:left;color:#fff}
+.tile .lbl .t{font-family:var(--font-ui);font-weight:600;font-size:14px;line-height:1.2;color:#fff}
+.tile .lbl .c{font-size:11.5px;color:rgba(255,255,255,.82);margin-top:1px}
 
 /* ---- accordion (FAQ) ---- */
 .accordion{border-top:1px solid var(--line)}

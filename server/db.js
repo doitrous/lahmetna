@@ -154,6 +154,7 @@ if (db.prepare('SELECT COUNT(*) n FROM products').get().n === 0) {
   iu.run('admin', seed.admin.name, seed.admin.email, '', hashPassword(seed.admin.password), null, now);
   iu.run('customer', 'Demo Customer', 'customer@lahmetna.com', '+20 100 000 0000', hashPassword('customer1234'), null, now);
   iu.run('vendor', 'Bonkam Farm', 'bonkam@lahmetna.com', '+20 100 111 1111', hashPassword('vendor1234'), vslug['bonkam'], now);
+  iu.run('vendor', 'Nile Harvest', 'nileharvest@lahmetna.com', '+20 100 222 2222', hashPassword('vendor1234'), vslug['nileharvest'], now);
   // a pending application so the admin queue is testable
   db.prepare('INSERT INTO applications (farm_name,contact_name,email,phone,location,categories,message,status,created) VALUES (?,?,?,?,?,?,?,\'pending\',?)')
     .run('Green Valley Farm', 'Sara Nabil', 'greenvalley@example.com', '+20 122 333 4444', 'Ismailia', 'Vegetables, Fruit', 'We grow organic vegetables and citrus and would love to join Lahmetna.', now);
