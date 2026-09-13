@@ -108,7 +108,7 @@ window.LH = (function () {
     '</div></div>' +
     '<header class="header"><div class="wrap"><div class="bar">' +
       '<button class="icon-btn hamburger" id="lh-menu" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>' +
-      '<a href="index.html" class="logo" dir="ltr"><span class="wm">lahmetna<span class="dot">.</span></span><span class="cap">YOUR EVERYDAY FARM MARKET</span></a>' +
+      '<a href="index.html" class="logo" dir="ltr"><img class="logo-mark" src="assets/logo.png" alt="Lahmetna" width="40" height="40" onerror="this.style.display=\'none\'"><span class="logo-txt"><span class="wm">lahmetna<span class="dot">.</span></span><span class="cap">YOUR EVERYDAY FARM MARKET</span></span></a>' +
       '<form class="search" id="lh-search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#917b85" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input type="search" name="q" placeholder="Search ribeye, free-range eggs, heirloom tomatoes…" aria-label="Search"></form>' +
       '<div class="row" style="margin-left:auto;gap:16px">' +
         '<div class="acct" id="lh-acct"></div>' +
@@ -135,8 +135,8 @@ window.LH = (function () {
       '<div class="row" style="gap:10px;margin-top:18px"><span class="pill">Cash on delivery</span><span class="pill">Visa · Meeza · PayTabs</span></div></div>' +
       '<div><h4>Shop</h4><div class="links"><a href="index.html?cat=Beef#shop">Beef</a><a href="index.html?cat=Lamb%20%26%20Goat#shop">Lamb &amp; Goat</a><a href="index.html?cat=Poultry#shop">Poultry &amp; Eggs</a><a href="index.html?cat=Vegetables#shop">Vegetables &amp; Fruit</a><a href="index.html?cat=Livestock#shop">Livestock</a></div></div>' +
       '<div><h4>Company</h4><div class="links"><a href="apply.html">Sell on Lahmetna</a><a href="index.html#faq">How it works</a><a href="#">Sustainability</a><a href="#">Careers</a></div></div>' +
-      '<div><h4>Help</h4><div class="links"><a href="index.html#faq">FAQs</a><a href="#">Delivery &amp; cold-chain</a><a href="#">Returns &amp; freshness</a><a href="login.html">My account</a></div></div>' +
-      '</div><div class="base"><span>© 2026 Lahmetna. Raised right, priced fair.</span><div class="row" style="gap:22px"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Halal certification</a></div></div></div></footer>';
+      '<div><h4>Help</h4><div class="links"><a href="index.html#faq">FAQs</a><a href="legal.html?doc=shipping">Delivery &amp; cold-chain</a><a href="legal.html?doc=refunds">Returns &amp; refunds</a><a href="login.html">My account</a></div></div>' +
+      '</div><div class="base"><span>© 2026 Lahmetna. Raised right, priced fair.</span><div class="row" style="gap:22px;flex-wrap:wrap"><a href="legal.html?doc=privacy">Privacy</a><a href="legal.html?doc=terms">Terms</a><a href="legal.html?doc=cookies">Cookies</a><a href="legal.html?doc=halal">Halal certification</a></div></div></div></footer>';
   }
   function cartHTML() {
     return '<div class="scrim-full" id="lh-scrim-cart"></div>' +
@@ -184,6 +184,9 @@ window.LH = (function () {
       else if (t.dataset.lhRm) setQty(t.dataset.lhRm, 0);
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { close($('#lh-cart'), $('#lh-scrim-cart')); close($('#lh-mnav'), $('#lh-scrim-menu')); var mnu = $('#lh-acct-menu'); if (mnu) mnu.hidden = true; } });
+    // condense the sticky header into a compact bar once scrolled (search, account & cart stay pinned)
+    var hdr = h.querySelector('.header');
+    if (hdr) { var onScroll = function () { hdr.classList.toggle('compact', window.scrollY > 140); }; window.addEventListener('scroll', onScroll, { passive: true }); onScroll(); }
     updateBadge();
   }
   function renderAcct() {

@@ -219,6 +219,37 @@
     });
   }
 
+  /* ---------- LEGAL PAGES ---------- */
+  function legal() {
+    api('/api/admin/pages').then(function (list) {
+      panel.innerHTML = '<h3 class="display" style="font-size:18px">Legal &amp; policy pages</h3>' +
+        '<p class="muted" style="font-size:13.5px;margin-top:6px">Edit the content of each public policy page. Saved changes go live immediately on the site.</p>' +
+        '<div class="card" style="margin-top:16px;padding:6px"><table class="tbl"><thead><tr><th>Page</th><th>Public URL</th><th>Updated</th><th></th></tr></thead><tbody>' +
+        list.map(function (p) {
+          return '<tr><td data-label="Page"><strong>' + esc(p.title) + '</strong></td>' +
+            '<td data-label="URL"><a href="legal.html?doc=' + esc(p.slug) + '" target="_blank">/legal.html?doc=' + esc(p.slug) + '</a></td>' +
+            '<td data-label="Updated">' + esc((p.updated || '').slice(0, 10)) + '</td>' +
+            '<td data-label=""><button class="btn btn-outline btn-sm" data-page="' + esc(p.slug) + '">Edit</button></td></tr>';
+        }).join('') + '</tbody></table></div>';
+    });
+  }
+  function pageEditor(slug) {
+    api('/api/admin/pages/' + slug).then(function (p) {
+      LH.modal('<form id="pg-form" style="padding:24px 26px;width:780px;max-width:94vw"><div class="row between"><strong class="display" style="font-size:20px">Edit: ' + esc(p.title) + '</strong><button type="button" class="icon-btn" data-close>✕</button></div>' +
+        '<div class="form-row"><label class="label">Title</label><input class="field" name="title" value="' + esc(p.title) + '"></div>' +
+        '<div class="form-row"><label class="label">Body (HTML)</label><textarea class="field" name="body" spellcheck="false" style="min-height:340px;font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.5">' + esc(p.body) + '</textarea></div>' +
+        '<p class="muted" style="font-size:12px">Write HTML — <code>&lt;h2&gt;</code> headings, <code>&lt;p&gt;</code> paragraphs, <code>&lt;ul&gt;&lt;li&gt;</code> lists. Replace the [bracketed] placeholders with your own wording.</p>' +
+        '<div class="form-error" id="pg-err" hidden></div>' +
+        '<div class="row" style="gap:10px;margin-top:8px"><button class="btn btn-primary btn-sm">Save page</button><a class="btn btn-outline btn-sm" href="legal.html?doc=' + esc(slug) + '" target="_blank">Preview</a></div></form>');
+      $('#pg-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        api('/api/admin/pages/' + slug, { method: 'PATCH', body: { title: this.title.value, body: this.body.value } })
+          .then(function () { LH.close($('#lh-modal'), $('#lh-mscrim')); LH.toast('Page saved'); legal(); })
+          .catch(function (er) { var el = $('#pg-err'); el.textContent = er.message; el.hidden = false; });
+      });
+    });
+  }
+
   /* ---------- SETTINGS ---------- */
   var SETTING_LABELS = {
     commission_rate: 'Standard commission (0–1)', awal_commission_rate: 'Awal commission (0–1)',
@@ -247,10 +278,10 @@
     if (!me) { location.href = 'login.html?next=admin.html'; return; }
     if (me.role !== 'admin') { location.href = me.role === 'vendor' ? 'vendor.html' : 'account.html'; return; }
     panel = $('#panel');
-    var go = LH.tabs({ overview: overview, orders: orders, catalog: catalog, vendors: vendors, customers: customers, applications: applications, support: support, payouts: payouts, subscriptions: subscriptions, marketing: marketing, settings: settings }, 'overview');
+    var go = LH.tabs({ overview: overview, orders: orders, catalog: catalog, vendors: vendors, customers: customers, applications: applications, support: support, payouts: payouts, subscriptions: subscriptions, marketing: marketing, legal: legal, settings: settings }, 'overview');
 
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-goto],[data-order],[data-ff],[data-refund],[data-cancel],[data-toggle],[data-pdel],[data-vendor],[data-cust],[data-approve],[data-reject],[data-ticket],[data-pay],[data-settle],[data-coupon-new],[data-coupon-toggle]');
+      var t = e.target.closest('[data-goto],[data-order],[data-ff],[data-refund],[data-cancel],[data-toggle],[data-pdel],[data-vendor],[data-cust],[data-approve],[data-reject],[data-ticket],[data-pay],[data-settle],[data-coupon-new],[data-coupon-toggle],[data-page]');
       if (!t) return; var d = t.dataset;
       if (d.goto) go(d.goto);
       else if (d.order) orderDetail(d.order);
@@ -268,6 +299,7 @@
       else if (d.settle) POST('/api/admin/payouts/' + d.settle + '/settle', {}).then(function () { LH.toast('Marked paid'); payouts(); });
       else if (d.couponNew !== undefined) couponForm();
       else if (d.couponToggle) POST('/api/admin/coupons/toggle', { code: d.couponToggle, active: d.on === '1' }).then(marketing);
+      else if (d.page) pageEditor(d.page);
     });
   });
 })();

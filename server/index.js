@@ -126,6 +126,8 @@ async function api(req, res, url) {
   }
   if (m === 'GET' && seg[0] === 'reviews') return json(res, 200, q.recentReviews(6));
   if (m === 'GET' && seg[0] === 'faqs') return json(res, 200, q.faqs());
+  if (m === 'GET' && seg[0] === 'pages' && seg.length === 1) return json(res, 200, q.pages());
+  if (m === 'GET' && seg[0] === 'pages' && seg[1]) { const p = q.page(seg[1]); return p ? json(res, 200, p) : json(res, 404, { error: 'Page not found' }); }
   if (m === 'GET' && seg[0] === 'vendors' && seg.length === 1) return json(res, 200, q.vendors());
   if (m === 'GET' && seg[0] === 'vendors' && seg[1]) {
     const v = q.vendorBySlug(seg[1]); if (!v) return json(res, 404, { error: 'not found' });
@@ -202,6 +204,9 @@ async function api(req, res, url) {
     if (m === 'POST' && seg[1] === 'coupons' && seg.length === 2) { const b = await readBody(req); if (!str(b.code, 40)) return json(res, 400, { error: 'A code is required' }); return json(res, 201, q.createCoupon({ code: str(b.code, 40), kind: b.kind, value: parseInt(b.value, 10) || 0, min_order: parseInt(b.min_order, 10) || 0, expires: b.expires || null, usage_limit: b.usage_limit ? parseInt(b.usage_limit, 10) : null })); }
     if (m === 'GET' && seg[1] === 'settings') return json(res, 200, q.settingsAll());
     if (m === 'PATCH' && seg[1] === 'settings') { const b = await readBody(req); Object.keys(b).forEach((k) => q.setSetting(k, b[k])); return json(res, 200, q.settingsAll()); }
+    if (m === 'GET' && seg[1] === 'pages' && seg.length === 2) return json(res, 200, q.pages());
+    if (m === 'GET' && seg[1] === 'pages' && seg[2]) { const p = q.page(seg[2]); return p ? json(res, 200, p) : json(res, 404, { error: 'not found' }); }
+    if (m === 'PATCH' && seg[1] === 'pages' && seg[2]) { const b = await readBody(req); const p = q.updatePage(seg[2], { title: b.title != null ? str(b.title, 160) : null, body: typeof b.body === 'string' ? b.body.slice(0, 60000) : null }); return p ? json(res, 200, p) : json(res, 404, { error: 'not found' }); }
     if (m === 'POST' && seg[1] === 'applications' && seg[3] === 'approve') {
       const appn = q.application(parseInt(seg[2], 10)); if (!appn) return json(res, 404, { error: 'not found' });
       if (appn.status === 'approved') return json(res, 200, appn);
@@ -437,6 +442,10 @@ function serveStatic(req, res, url) {
     if (err) { res.writeHead(404, { 'content-type': 'text/plain' }); return res.end('Not found'); }
     const ext = path.extname(filePath).toLowerCase();
     const cache = /\.(html|css|js|webmanifest)$/.test(ext) ? 'no-cache' : 'public, max-age=3600';
+    // inject the request origin so social/SEO tags carry absolute URLs wherever deployed
+    if (ext === '.html' && buf.includes('%%ORIGIN%%')) {
+      buf = Buffer.from(String(buf).replaceAll('%%ORIGIN%%', baseUrl(req)));
+    }
     res.writeHead(200, { 'content-type': MIME[ext] || 'application/octet-stream', 'cache-control': cache });
     res.end(buf);
   });

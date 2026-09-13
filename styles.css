@@ -195,8 +195,10 @@ input[type=checkbox],input[type=radio]{accent-color:var(--burgundy);width:19px;h
 .utility a{color:#ead9df}.utility a:hover{color:#fff}
 .header{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid var(--line)}
 .header .bar{min-height:92px;display:flex;align-items:center;gap:26px}
-.logo{display:flex;flex-direction:column;flex-shrink:0;font-family:var(--font-brand);font-weight:700;line-height:1;color:var(--burgundy)}
-.logo img{display:none}
+.logo{display:flex;flex-direction:row;align-items:center;gap:11px;flex-shrink:0;font-family:var(--font-brand);font-weight:700;line-height:1;color:var(--burgundy)}
+.logo-txt{display:flex;flex-direction:column;line-height:1}
+.logo-mark{width:40px;height:40px;flex:none;display:block;transition:width .25s ease,height .25s ease}
+.header.compact .logo-mark{width:32px;height:32px}
 .logo .wm{font-family:var(--font-brand);font-weight:700;font-size:34px;letter-spacing:-2px;line-height:1;color:var(--burgundy)}
 .logo .wm .dot{color:var(--gold)}
 .logo .cap{font-family:var(--font-ui);font-size:9px;font-weight:600;letter-spacing:1.8px;margin-top:9px;color:var(--ink-2)}
@@ -209,6 +211,14 @@ input[type=checkbox],input[type=radio]{accent-color:var(--burgundy);width:19px;h
 .nav a:hover,.nav a.active{border-bottom-color:var(--burgundy);color:var(--burgundy)}
 .hamburger{display:none}
 .acct-label{font-size:14px;font-weight:500}
+/* compact sticky bar once the page is scrolled — keeps search, account & cart always reachable */
+.header{transition:box-shadow .25s ease}
+.header.compact{box-shadow:0 6px 22px rgba(105,30,54,.10)}
+.header.compact .bar{min-height:60px}
+.header.compact .nav{display:none}
+.header.compact .hamburger{display:inline-flex}
+.header.compact .logo .cap{display:none}
+.header.compact .logo .wm{font-size:26px}
 
 /* account menu */
 .acct{position:relative}
@@ -334,6 +344,17 @@ input[type=checkbox],input[type=radio]{accent-color:var(--burgundy);width:19px;h
 .deflist{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;font-size:14px;align-items:baseline}
 .deflist dt{color:var(--ink-2);font-size:13px}
 .deflist dd{margin:0;font-weight:500;text-align:right}
+
+/* ---- legal / policy pages ---- */
+.legal{font-size:15px;line-height:1.75;color:var(--ink)}
+.legal .lead{font-size:16px;color:var(--ink-2);padding:14px 16px;background:var(--soft);border:1px solid var(--line);border-radius:var(--r-md);margin:0 0 26px}
+.legal h2{font-family:var(--font-brand);font-weight:600;font-size:21px;color:var(--burgundy);margin:30px 0 10px}
+.legal h2:first-child{margin-top:0}
+.legal p{margin:0 0 14px;max-width:70ch}
+.legal ul,.legal ol{margin:0 0 14px;padding-inline-start:22px;max-width:70ch}
+.legal li{margin-bottom:7px}
+.legal a{color:var(--burgundy);text-decoration:underline;text-underline-offset:3px}
+@media(max-width:820px){#legal-grid{grid-template-columns:1fr!important;gap:20px!important}}
 
 /* ---- dashboards ---- */
 .dash{display:grid;grid-template-columns:230px 1fr;gap:32px;max-width:var(--maxw);margin:0 auto;padding:32px 0;width:calc(100% - 96px)}

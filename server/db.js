@@ -88,6 +88,9 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS notifications (
     id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, type TEXT, body TEXT, link TEXT, read INTEGER DEFAULT 0, created TEXT
   );
+  CREATE TABLE IF NOT EXISTS pages (
+    slug TEXT PRIMARY KEY, title TEXT, body TEXT, sort INTEGER DEFAULT 0, updated TEXT
+  );
 `);
 
 /* idempotent column migrations for tables that predate this build (ALTER throws if the column exists → ignore) */
@@ -180,6 +183,58 @@ if (db.prepare('SELECT COUNT(*) n FROM products').get().n === 0) {
       .run(cust.id, 'customer', 'When do you deliver to Maadi?', 'Delivery', seedNow, seedNow);
     db.prepare('INSERT INTO ticket_messages (ticket_id,author_id,author_role,body,created) VALUES (?,?,?,?,?)')
       .run(t.lastInsertRowid, cust.id, 'customer', 'Hi! I would like to know the delivery windows for Maadi. Thanks!', seedNow);
+  }
+  // legal / policy pages — scaffolded templates ready for the admin to fill in
+  if (db.prepare('SELECT COUNT(*) n FROM pages').get().n === 0) {
+    const sec = (h, ...ps) => '<h2>' + h + '</h2>' + ps.map((p) => '<p>' + p + '</p>').join('');
+    const intro = (name) => '<p class="lead">This ' + name + ' is a starting template for Lahmetna. Replace the bracketed placeholders and review with qualified legal counsel before publishing.</p>';
+    const co = '[Company legal name]', addr = '[registered address]', email = '[legal@yourdomain.com]';
+    const P = [
+      ['terms', 'Terms & Conditions', 1,
+        intro('Terms & Conditions document') +
+        sec('1. About us', 'Lahmetna is operated by ' + co + ', registered at ' + addr + '. By using our website and services you agree to these Terms & Conditions.') +
+        sec('2. Accounts', 'You are responsible for keeping your account details accurate and your password secure. You must be at least 18 years old to place an order.') +
+        sec('3. Orders & pricing', 'All prices are shown in Egyptian Pounds (EGP) and include applicable taxes unless stated otherwise. We may refuse or cancel an order where an item is unavailable or a price is listed in error.') +
+        sec('4. Vendors & the marketplace', 'Lahmetna is a marketplace connecting customers with independent partner farms and vendors. [Describe the respective responsibilities of Lahmetna and its vendors for the products sold.]') +
+        sec('5. Delivery', 'Delivery terms are described in our Delivery & Cold-Chain policy. [Add delivery areas, windows and any conditions.]') +
+        sec('6. Cancellations & refunds', 'Please see our Returns & Refunds policy. [Summarise cancellation rights for perishable goods and live animals.]') +
+        sec('7. Liability', '[State the limitations of liability that apply, subject to Egyptian consumer-protection law.]') +
+        sec('8. Governing law', 'These terms are governed by the laws of the Arab Republic of Egypt. [Confirm jurisdiction for disputes.]') +
+        sec('9. Contact', 'Questions about these terms can be sent to ' + email + '.')],
+      ['privacy', 'Privacy Policy', 2,
+        intro('Privacy Policy') +
+        sec('1. Who we are', co + ' (“Lahmetna”, “we”) is the data controller for personal data collected through this website.') +
+        sec('2. Data we collect', 'Account details (name, email, phone), delivery addresses, order history, and payment references. [We never store full card numbers — only a tokenised reference, card brand and last four digits.]') +
+        sec('3. How we use your data', 'To process orders and deliveries, provide customer support, operate memberships, prevent fraud, and — where you have consented — send you updates.') +
+        sec('4. Sharing', 'We share the minimum necessary data with partner vendors and delivery providers to fulfil your orders, and with our payment processor. [List sub-processors.]') +
+        sec('5. Your rights', 'You may request access to, correction of, or deletion of your personal data. [Describe how users exercise these rights and your response times.]') +
+        sec('6. Retention & security', '[State how long data is kept and the safeguards in place.]') +
+        sec('7. Contact', 'Privacy questions can be sent to ' + email + '.')],
+      ['refunds', 'Returns & Refunds', 3,
+        intro('Returns & Refunds policy') +
+        sec('1. Fresh & perishable goods', '[Explain your approach to freshness guarantees and quality issues for meat, dairy and produce.]') +
+        sec('2. Reporting a problem', 'Contact support within [X hours] of delivery with your order number and photos so we can investigate quickly.') +
+        sec('3. Refunds & replacements', '[Describe when a refund, credit or replacement is offered and how long refunds take to appear.]') +
+        sec('4. Live animals', '[State the specific terms that apply to live-animal orders and any slaughter/processing services.]') +
+        sec('5. Contact', 'Start a return by opening a support request from your account or emailing ' + email + '.')],
+      ['shipping', 'Delivery & Cold-Chain', 4,
+        intro('Delivery & Cold-Chain policy') +
+        sec('1. Delivery areas', 'We currently deliver across [Cairo & Giza]. [List governorates and any excluded zones.]') +
+        sec('2. Delivery windows & fees', '[State delivery windows, standard fees, and free-delivery thresholds, including member benefits.]') +
+        sec('3. Cold-chain handling', 'Orders are sealed, chilled and tracked end-to-end. [Describe packaging and temperature handling.]') +
+        sec('4. Receiving your order', '[Explain what happens if no one is available to receive a chilled order.]')],
+      ['cookies', 'Cookie Policy', 5,
+        intro('Cookie Policy') +
+        sec('1. What we use', 'We use strictly necessary cookies to keep you signed in and to remember your cart. [List any analytics or marketing cookies if added.]') +
+        sec('2. Managing cookies', 'You can control cookies through your browser settings. [Describe any in-site consent controls.]')],
+      ['halal', 'Halal Certification', 6,
+        intro('Halal Certification statement') +
+        sec('1. Our commitment', '[Describe your halal sourcing and slaughter standards.]') +
+        sec('2. Certification', '[Name the certifying body and reference numbers, and how customers can verify them.]') +
+        sec('3. Vendor requirements', '[State what partner farms must demonstrate to list halal products.]')]
+    ];
+    const ip = db.prepare('INSERT INTO pages (slug,title,body,sort,updated) VALUES (?,?,?,?,?)');
+    P.forEach((x) => ip.run(x[0], x[1], x[3], x[2], seedNow));
   }
 }
 
@@ -294,6 +349,15 @@ const q = {
 
   /* faqs */
   faqs: () => db.prepare('SELECT q,a FROM faqs ORDER BY sort').all(),
+
+  /* legal / policy pages */
+  pages: () => db.prepare('SELECT slug,title,sort,updated FROM pages ORDER BY sort').all(),
+  page: (slug) => db.prepare('SELECT slug,title,body,updated FROM pages WHERE slug=?').get(slug),
+  updatePage(slug, p) {
+    const cur = db.prepare('SELECT slug FROM pages WHERE slug=?').get(slug); if (!cur) return null;
+    db.prepare('UPDATE pages SET title=COALESCE(?,title), body=COALESCE(?,body), updated=? WHERE slug=?').run(p.title != null ? p.title : null, p.body != null ? p.body : null, new Date().toISOString(), slug);
+    return db.prepare('SELECT slug,title,body,updated FROM pages WHERE slug=?').get(slug);
+  },
 
   /* orders */
   createOrder(o, items) {
