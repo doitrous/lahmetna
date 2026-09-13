@@ -400,7 +400,22 @@ input[type=checkbox],input[type=radio]{accent-color:var(--burgundy);width:19px;h
   .hamburger{display:inline-flex}
   .search{display:none}
   .search.mobile-show{display:flex;position:absolute;left:16px;right:16px;top:74px;max-width:none;z-index:5}
-  .header .bar{min-height:76px}
+  .header .bar{min-height:76px;gap:14px}
+  /* header must fit 375px: shrink wordmark, drop the tagline & account label so the cart never spills off-screen */
+  .logo .wm{font-size:22px}
+  .logo .cap{display:none}
+  .logo-mark{width:34px;height:34px}
+  .acct-label{display:none}
+  #lh-cart-btn{padding-inline:12px}
+  /* top utility bar: keep the delivery promo, hide the secondary links so it doesn't wrap into 3 lines */
+  .utility .wrap>.row:last-child{display:none}
+  .utility .wrap{justify-content:center}
+  /* stack every 2-column content grid so nothing overflows or gets crushed */
+  #faq .grid,#legal-grid,#co-grid,#farms-card,#apply-grid{grid-template-columns:1fr!important;gap:28px!important}
+  #farms-card>div:first-child{min-height:220px}
+  /* newsletter: let the email field shrink to fit instead of forcing 260px */
+  #news-form{width:100%}
+  #news-form .field{width:auto!important;flex:1;min-width:0}
   .hero{grid-template-columns:1fr;margin-top:18px}
   .hero-photo{min-height:235px}
   .cols-3{grid-template-columns:1fr}
@@ -422,7 +437,6 @@ input[type=checkbox],input[type=radio]{accent-color:var(--burgundy);width:19px;h
   .wrap{width:calc(100% - 32px)}
   .cols-4{grid-template-columns:1fr}
   .footer .cols{grid-template-columns:1fr}
-  .tile img,.tile .tinted{width:96px;height:96px}
 }
 
 /* ---- mobile nav sheet ---- */
