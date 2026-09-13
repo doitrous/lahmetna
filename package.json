@@ -5,7 +5,7 @@
   "description": "Lahmetna storefront — natural meat & fresh farm produce (zero-dependency Node backend + static frontend)",
   "type": "commonjs",
   "scripts": {
-    "start": "node server/index.js"
+    "start": "node --experimental-sqlite server/index.js"
   },
   "engines": { "node": ">=22.5.0" }
 }
