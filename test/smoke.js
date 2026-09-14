@@ -42,6 +42,25 @@ async function waitForServer(timeoutMs) {
     const health = await authed.json();
     assert.strictEqual(health.siteSlug, 'lahmetna', '/api/seo/health must report siteSlug');
 
+    // A hub-pushed redirect must actually redirect, not just get accepted by /api/seo/sync.
+    const sync = await fetch(base + '/api/seo/sync', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + SEO_SECRET, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        version: 1, siteSlug: 'lahmetna', settings: {}, pages: [],
+        redirects: [{ source: '/old-path', destination: '/new-path', type: 301, active: true }],
+      }),
+    });
+    assert.strictEqual(sync.status, 200, '/api/seo/sync must accept a well-formed snapshot');
+    assert.strictEqual((await sync.json()).status, 'applied');
+
+    const health2 = await fetch(base + '/api/seo/health', { headers: { Authorization: 'Bearer ' + SEO_SECRET } }).then((r) => r.json());
+    assert.strictEqual(health2.counts.redirects, 1, 'health must count the synced redirect');
+
+    const redirect = await fetch(base + '/old-path', { redirect: 'manual' });
+    assert.strictEqual(redirect.status, 301, 'GET /old-path must 301, not fall through to a 404');
+    assert.strictEqual(redirect.headers.get('location'), '/new-path');
+
     console.log('smoke test passed');
   } finally {
     server.kill();

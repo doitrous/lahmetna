@@ -525,6 +525,14 @@ initSeo().then(() => {
   http.createServer(async (req, res) => {
     const url = new URL(req.url, baseUrl(req));
     try {
+      // Hub-pushed redirects, ahead of any other dispatch — mirrors
+      // packages/express/src/index.ts's redirect middleware. redirectFor itself unions /api and
+      // /admin into whatever reservedPrefixes it's given, so calling it unconditionally here
+      // (even for /api/* requests) is safe: it always returns null for those.
+      const snapshot = await seo.store.getSnapshot().catch(() => null);
+      const hit = await seo.core.redirectFor(seo.store, url.pathname, snapshot?.settings.reservedPrefixes);
+      if (hit) { res.writeHead(hit.status, { location: hit.destination }); return res.end(); }
+
       if (url.pathname.startsWith('/api/')) return await api(req, res, url);
       if (req.method !== 'GET') return json(res, 405, { error: 'method not allowed' });
       if (url.pathname === '/sitemap.xml') { res.writeHead(200, { 'content-type': 'application/xml; charset=utf-8' }); return res.end(sitemapXml(req)); }
@@ -534,4 +542,10 @@ initSeo().then(() => {
       json(res, /bad body|too large/.test(e.message) ? 400 : 500, { error: e.message || 'server error' });
     }
   }).listen(PORT, () => console.log('Lahmetna running → http://localhost:' + PORT + '  (PayTabs: ' + (paytabs.configured() ? 'LIVE' : 'test/mock') + ')'));
+}).catch((err) => {
+  // A store that can't even initialize (e.g. an unwritable JsonFileStore path) means every
+  // seo-runtime route would silently 500 forever; fail the whole process at boot instead of
+  // limping along without the hub integration.
+  console.error('[seo-runtime] failed to initialize:', err);
+  process.exit(1);
 });
