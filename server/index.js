@@ -429,6 +429,30 @@ function buildProduct(b, vendorId) {
   return o;
 }
 
+/* ---- SEO: sitemap.xml + robots.txt ---- */
+const xmlEsc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
+function sitemapXml(req) {
+  const base = baseUrl(req);
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = [{ loc: base + '/', lastmod: today, priority: '1.0' }, { loc: base + '/apply.html', lastmod: today, priority: '0.5' }];
+  q.vendors().filter((v) => v.status === 'active').forEach((v) => urls.push({ loc: base + '/vendor.html?slug=' + encodeURIComponent(v.slug), lastmod: (v.created || today).slice(0, 10), priority: '0.6' }));
+  q.products({}).forEach((p) => urls.push({ loc: base + '/product.html?id=' + encodeURIComponent(p.id), lastmod: (p.created || today).slice(0, 10), priority: '0.7' }));
+  const body = urls.map((u) => '  <url><loc>' + xmlEsc(u.loc) + '</loc><lastmod>' + u.lastmod + '</lastmod><priority>' + u.priority + '</priority></url>').join('\n');
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + '\n</urlset>\n';
+}
+function robotsTxt(req) {
+  return [
+    'User-agent: *', 'Allow: /', '',
+    'User-agent: GPTBot', 'Allow: /', '',
+    'User-agent: ClaudeBot', 'Allow: /', '',
+    'User-agent: CCBot', 'Disallow: /', '',
+    'User-agent: Bytespider', 'Disallow: /', '',
+    'User-agent: meta-externalagent', 'Disallow: /', '',
+    'User-agent: Amazonbot', 'Disallow: /', '',
+    'Sitemap: ' + baseUrl(req) + '/sitemap.xml', '',
+  ].join('\n');
+}
+
 /* ---- static (allowlisted, traversal-safe) ---- */
 function serveStatic(req, res, url) {
   let rel = decodeURIComponent(url.pathname);
@@ -456,6 +480,8 @@ http.createServer(async (req, res) => {
   try {
     if (url.pathname.startsWith('/api/')) return await api(req, res, url);
     if (req.method !== 'GET') return json(res, 405, { error: 'method not allowed' });
+    if (url.pathname === '/sitemap.xml') { res.writeHead(200, { 'content-type': 'application/xml; charset=utf-8' }); return res.end(sitemapXml(req)); }
+    if (url.pathname === '/robots.txt') { res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' }); return res.end(robotsTxt(req)); }
     serveStatic(req, res, url);
   } catch (e) {
     json(res, /bad body|too large/.test(e.message) ? 400 : 500, { error: e.message || 'server error' });
