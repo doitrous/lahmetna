@@ -23,7 +23,7 @@ let seo = null;
 async function initSeo() {
   const core = await import('@omary98/seo-runtime-core');
   const store = new core.JsonFileStore(path.join(ROOT, 'data', 'seo-runtime.json'));
-  seo = { core, store, version: '0.1.2' };
+  seo = { core, store, version: '0.1.3' };
   core.startSync(store, { version: seo.version });
 }
 
