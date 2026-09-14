@@ -6,9 +6,10 @@ const path = require('node:path');
 const assert = require('node:assert');
 
 const PORT = 4571;
+const SEO_SECRET = 'test-secret';
 const base = 'http://localhost:' + PORT;
 const server = spawn(process.execPath, [path.join(__dirname, '..', 'server', 'index.js')], {
-  env: Object.assign({}, process.env, { PORT: String(PORT) }),
+  env: Object.assign({}, process.env, { PORT: String(PORT), SEO_HUB_SECRET: SEO_SECRET, SEO_SITE_SLUG: 'lahmetna' }),
   stdio: ['ignore', 'pipe', 'inherit'],
 });
 
@@ -33,6 +34,13 @@ async function waitForServer(timeoutMs) {
     const home = await fetch(base + '/').then((r) => r.text());
     assert.ok(/<h1/.test(home), 'homepage must contain an <h1');
     assert.ok(home.includes('rel="canonical"'), 'homepage must contain rel="canonical"');
+
+    const unauthed = await fetch(base + '/api/seo/health');
+    assert.strictEqual(unauthed.status, 401, '/api/seo/health must be 401 without a bearer');
+    const authed = await fetch(base + '/api/seo/health', { headers: { Authorization: 'Bearer ' + SEO_SECRET } });
+    assert.strictEqual(authed.status, 200, '/api/seo/health must be 200 with the right bearer');
+    const health = await authed.json();
+    assert.strictEqual(health.siteSlug, 'lahmetna', '/api/seo/health must report siteSlug');
 
     console.log('smoke test passed');
   } finally {
