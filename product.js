@@ -8,6 +8,7 @@
   function gallery(p) { return LH.media(p); }
   function renderProduct(data) {
     product = data.product; var v = data.vendor, s = data.summary;
+    if (LH.arName(product.id)) product.name = LH.arName(product.id);
     document.title = product.name.split(' · ')[0] + ' · Lahmetna';
     var priceBlock = product.type === 'livestock'
       ? '<div class="price" style="font-size:26px">' + money(product.price) + '</div><div class="muted" style="font-size:13px;margin-top:2px">Est. ' + product.weight_kg + 'kg · ' + money(product.price_per_kg) + '/kg live weight</div>'
@@ -80,6 +81,7 @@
       if (!rel.length) return;
       $('#related-wrap').hidden = false;
       $('#related').innerHTML = rel.map(function (p) {
+        if (LH.arName(p.id)) p.name = LH.arName(p.id);
         return '<a class="card card-hover" href="product.html?id=' + p.id + '" style="display:block"><div class="media" style="height:150px;position:relative">' + LH.media(p) + '</div><div style="padding:12px 14px"><div class="name" style="font-family:var(--font-display);font-weight:600;font-size:15px">' + esc(p.name.split(' · ')[0]) + '</div><div class="price" style="font-size:16px;margin-top:6px">' + (p.type === 'livestock' ? 'from ' : '') + money(p.price) + '</div></div></a>';
       }).join('');
     });
@@ -90,7 +92,7 @@
     api('/api/products/' + id).then(function (data) {
       renderProduct(data);
       $('#pdp-reviews').hidden = false;
-      $('#rev-heading').textContent = 'Reviews for ' + product.name.split(' · ')[0];
+      $('#rev-heading').textContent = (LH.lang === 'ar' ? 'تقييمات ' : 'Reviews for ') + product.name.split(' · ')[0];
       renderRevFilters(); loadReviews();
     }).catch(function () {
       document.getElementById('pdp-root').innerHTML = '<div class="wrap" style="padding:80px 24px">Product not found. <a href="index.html">Back to shop</a></div>';

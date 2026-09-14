@@ -118,6 +118,132 @@ window.LH = (function () {
     'Can I sell my farm’s produce on Lahmetna?': { q: 'هل يمكنني بيع منتجات مزرعتي على لحمتنا؟', a: 'نعم — استخدم «بِع على لحمتنا» للتقديم. يراجع فريق التوريد كل طلب شخصيًا؛ وبعد الموافقة تنشئ حساب بائع خاصًا بك وتُدرج منتجاتك من لوحتك.' }
   };
 
+  // dashboards (customer / vendor / admin) + product page + status words
+  Object.assign(AR, {
+    // dashboard tab labels + headers
+    'Overview': 'نظرة عامة', 'Products': 'المنتجات', 'Analytics': 'التحليلات', 'Store profile': 'ملف المتجر',
+    'Security': 'الأمان', 'Payment methods': 'طرق الدفع', 'Login & security': 'تسجيل الدخول والأمان',
+    'Catalog': 'الكتالوج', 'Vendors': 'البائعون', 'Customers': 'العملاء', 'Applications': 'طلبات الانضمام',
+    'Subscriptions': 'الاشتراكات', 'Marketing': 'التسويق', 'Legal pages': 'الصفحات القانونية',
+    'Lahmetna operations': 'عمليات لحمتنا', 'Your farm': 'مزرعتك',
+    // common table headers / labels
+    'Order': 'الطلب', 'Date': 'التاريخ', 'Status': 'الحالة', 'Total': 'الإجمالي', 'Details': 'التفاصيل',
+    'Category': 'الفئة', 'Price': 'السعر', 'Stock': 'المخزون', 'Product': 'المنتج', 'Vendor': 'البائع',
+    'Customer': 'العميل', 'Method': 'طريقة الدفع', 'Manage': 'إدارة', 'Edit': 'تعديل', 'Delete': 'حذف',
+    'Name': 'الاسم', 'Email': 'البريد الإلكتروني', 'Phone': 'الهاتف', 'City': 'المدينة', 'Label': 'التسمية',
+    'Subject': 'الموضوع', 'Updated': 'آخر تحديث', 'Open': 'فتح', 'Send': 'إرسال', 'Amount': 'المبلغ',
+    'Created': 'أُنشئت', 'Paid': 'مدفوع', 'Plan': 'الخطة', 'Commission': 'العمولة', 'Revenue': 'الإيراد',
+    'Member': 'عضو', 'Spend': 'الإنفاق', 'Code': 'الكود', 'Type': 'النوع', 'Value': 'القيمة',
+    'Used': 'مستخدم', 'From': 'من', 'Priority': 'الأولوية', 'Owed': 'المستحق', 'Item': 'الصنف',
+    'Qty': 'الكمية', 'Line': 'الإجمالي', 'Net': 'الصافي', 'Gross': 'الإجمالي', 'Settled': 'تمت التسوية',
+    'Units': 'الوحدات', 'Discount': 'الخصم', 'Delivery': 'التوصيل', 'Free': 'مجاني', 'Refunded': 'مسترد',
+    'Tracking': 'التتبّع', 'Timeline': 'المسار الزمني', 'Default': 'افتراضي', 'Remove': 'إزالة',
+    // status words (st())
+    'active': 'نشط', 'pending': 'قيد الانتظار', 'processing': 'قيد المعالجة', 'confirmed': 'مؤكد',
+    'packed': 'تم التغليف', 'shipped': 'تم الشحن', 'delivered': 'تم التوصيل', 'cancelled': 'ملغى',
+    'refunded': 'مسترد', 'paid': 'مدفوع', 'closed': 'مغلق', 'resolved': 'تم الحل', 'open': 'مفتوح',
+    'high': 'عاجل', 'normal': 'عادي', 'expired': 'منتهٍ', 'cancelled-sub': 'قيد الإلغاء',
+    // customer account
+    'Orders placed': 'الطلبات المنفذة', 'Lifetime spend': 'إجمالي الإنفاق', 'Latest order': 'أحدث طلب',
+    'View orders': 'عرض الطلبات', 'Join Lahmetna One': 'انضم إلى Lahmetna One', 'See benefits': 'عرض المزايا',
+    'Free delivery, 7% member pricing, priority support.': 'توصيل مجاني، خصم ٧٪ للأعضاء، ودعم ذو أولوية.',
+    'No orders yet.': 'لا توجد طلبات بعد.', 'Start shopping': 'ابدأ التسوّق', 'Buy again': 'اشترِ مجددًا',
+    'Get help with this order': 'مساعدة بشأن هذا الطلب', '+ Add address': '+ إضافة عنوان',
+    'Make default': 'اجعله افتراضيًا', 'No saved addresses yet.': 'لا توجد عناوين محفوظة بعد.',
+    'Edit address': 'تعديل العنوان', 'Add address': 'إضافة عنوان', 'Recipient': 'المستلم',
+    'Street address': 'عنوان الشارع', 'Apartment / floor (optional)': 'الشقة / الطابق (اختياري)',
+    'Governorate': 'المحافظة', 'Save address': 'حفظ العنوان', '+ Add card': '+ إضافة بطاقة',
+    'We never store full card numbers — only a secure token, the card brand and last 4 digits.': 'لا نخزّن أرقام البطاقات كاملة أبدًا — فقط رمزًا آمنًا ونوع البطاقة وآخر ٤ أرقام.',
+    'No saved cards. You can also pay cash on delivery at checkout.': 'لا توجد بطاقات محفوظة. يمكنك أيضًا الدفع عند الاستلام.',
+    'Add a card': 'إضافة بطاقة',
+    'Enter only your card brand and the last 4 digits — never the full number. A secure token stands in for the card.': 'أدخل نوع البطاقة وآخر ٤ أرقام فقط — لا الرقم كاملًا. يحل رمز آمن محل البطاقة.',
+    'Card brand': 'نوع البطاقة', 'Last 4 digits': 'آخر ٤ أرقام', 'Expiry': 'تاريخ الانتهاء', 'Save card': 'حفظ البطاقة',
+    'Free delivery': 'توصيل مجاني', 'Free cold-chain delivery on member orders over EGP 450.': 'توصيل مبرّد مجاني لطلبات الأعضاء فوق ٤٥٠ ج.م.',
+    'Member pricing': 'أسعار الأعضاء', '7% off your subtotal on every order, automatically.': 'خصم ٧٪ على إجمالي كل طلب تلقائيًا.',
+    'Early access': 'وصول مبكر', 'Shop the weekly harvest drops before everyone else.': 'تسوّق وصول الحصاد الأسبوعي قبل الجميع.',
+    'Priority support': 'دعم ذو أولوية', 'Your tickets jump the queue and are flagged high-priority.': 'تُقدَّم تذاكرك في الصف وتُوسم بأولوية عالية.',
+    'Renews': 'يتجدد في', 'Cancel membership': 'إلغاء العضوية', 'Resume membership': 'استئناف العضوية',
+    'Billed monthly via PayTabs. Cancel anytime.': 'يُدفع شهريًا عبر PayTabs. ألغِ في أي وقت.',
+    'Billing history': 'سجل الفواتير', '+ New request': '+ طلب جديد', 'No support requests yet.': 'لا توجد طلبات دعم بعد.',
+    'This request is closed.': 'هذا الطلب مغلق.', 'Write a reply…': 'اكتب ردًا…', 'Close request': 'إغلاق الطلب',
+    'New support request': 'طلب دعم جديد', 'How can we help?': 'كيف يمكننا مساعدتك؟', 'Submit request': 'إرسال الطلب',
+    'Order (optional)': 'الطلب (اختياري)', 'Product quality': 'جودة المنتج', 'Billing': 'الفوترة', 'Other': 'أخرى',
+    'Profile': 'الملف الشخصي', 'Save profile': 'حفظ الملف', 'Change password': 'تغيير كلمة المرور',
+    'Current password': 'كلمة المرور الحالية', 'New password': 'كلمة المرور الجديدة', 'Update password': 'تحديث كلمة المرور',
+    // vendor
+    'Featured store': 'متجر مميز', 'Gross sales': 'إجمالي المبيعات', 'Net earnings': 'صافي الأرباح',
+    'Pending payout': 'دفعة معلّقة', 'Manage products': 'إدارة المنتجات',
+    'Add products, fulfill orders, and track your earnings. Products appear in the shop instantly.': 'أضف المنتجات ونفّذ الطلبات وتابع أرباحك. تظهر المنتجات في المتجر فورًا.',
+    'Upgrade to Lahmetna Awal': 'الترقية إلى Lahmetna Awal',
+    'Lower commission (8%), featured placement, weekly payouts, advanced analytics.': 'عمولة أقل (٨٪)، ظهور مميز، مدفوعات أسبوعية، تحليلات متقدمة.',
+    'See Awal': 'عرض Awal', '+ Add product': '+ إضافة منتج', 'No products yet.': 'لا توجد منتجات بعد.',
+    '+ Add your first product': '+ أضف أول منتج لك', 'Your items': 'منتجاتك', 'Your total': 'إجماليك',
+    'Fulfillment': 'التنفيذ', 'No orders yet — they’ll appear here as customers buy your products.': 'لا توجد طلبات بعد — ستظهر هنا عندما يشتري العملاء منتجاتك.',
+    'Mark confirmed': 'وضع علامة: مؤكد', 'Mark packed': 'وضع علامة: تم التغليف', 'Mark shipped': 'وضع علامة: تم الشحن', 'Mark delivered': 'وضع علامة: تم التوصيل',
+    'No earnings yet.': 'لا توجد أرباح بعد.', 'Pending balance': 'الرصيد المعلّق', 'Payout': 'الدفعة',
+    'Lahmetna settles payouts to your registered account on the cadence above. Admin marks each payout as paid.': 'تسوّي لحمتنا المدفوعات إلى حسابك المسجّل حسب الجدول أعلاه. تعلّم الإدارة كل دفعة كمدفوعة.',
+    'No payouts issued yet.': 'لم تُصدر أي مدفوعات بعد.', 'Revenue · recent days': 'الإيرادات · الأيام الأخيرة',
+    'No sales data yet.': 'لا توجد بيانات مبيعات بعد.', 'Top products': 'أفضل المنتجات',
+    'No product sales yet.': 'لا توجد مبيعات منتجات بعد.', 'Lower commission': 'عمولة أقل',
+    'Pay 8% instead of 12% on every sale — it usually pays for itself.': 'ادفع ٨٪ بدل ١٢٪ على كل بيع — غالبًا ما يغطي تكلفته.',
+    'Featured placement': 'ظهور مميز', 'Your store and products get boosted visibility across Lahmetna.': 'يحصل متجرك ومنتجاتك على ظهور معزّز عبر لحمتنا.',
+    'Weekly payouts': 'مدفوعات أسبوعية', 'Get settled weekly instead of the standard cadence.': 'احصل على تسوية أسبوعية بدل الجدول القياسي.',
+    'Advanced analytics': 'تحليلات متقدمة', 'Daily revenue trends and top-product breakdowns.': 'اتجاهات الإيراد اليومية وتفصيل أفضل المنتجات.',
+    'Cancel Awal': 'إلغاء Awal', 'Resume Awal': 'استئناف Awal', 'Store name': 'اسم المتجر',
+    'Location': 'الموقع', 'About your farm': 'عن مزرعتك', 'Account': 'الحساب',
+    // vendor product modal (static in vendor.html)
+    'Product name': 'اسم المنتج', 'Packaged product': 'منتج مغلّف', 'Live / whole animal': 'حيوان حي / كامل',
+    'Price (EGP)': 'السعر (ج.م)', 'Unit': 'الوحدة', 'Price per kg (EGP)': 'السعر لكل كجم (ج.م)',
+    'Est. weight (kg)': 'الوزن التقديري (كجم)', 'Badge (optional)': 'شارة (اختياري)', 'Description': 'الوصف',
+    'Active (visible in the shop)': 'نشط (ظاهر في المتجر)', 'Save product': 'حفظ المنتج', 'Add product': 'إضافة منتج',
+    // admin
+    'GMV': 'إجمالي المبيعات', 'Commission earned': 'العمولة المحصّلة', 'Paid orders': 'الطلبات المدفوعة',
+    'Active vendors': 'البائعون النشطون', 'One members': 'أعضاء One', 'Awal vendors': 'بائعو Awal',
+    'Open tickets': 'التذاكر المفتوحة', 'Pending payouts': 'مدفوعات معلّقة', 'Review': 'مراجعة',
+    'Open queue': 'فتح القائمة', 'Settle': 'تسوية', 'COD': 'الدفع عند الاستلام', 'Card': 'بطاقة',
+    'Refund': 'استرداد', 'Cancel order': 'إلغاء الطلب', 'Hide': 'إخفاء', 'Show': 'إظهار',
+    'Commission rate (%)': 'نسبة العمولة (٪)', 'No': 'لا', 'Yes': 'نعم', 'Suspend this vendor': 'أوقف هذا البائع',
+    'Save changes': 'حفظ التغييرات', 'Suspend': 'إيقاف', 'Unsuspend': 'إلغاء الإيقاف',
+    'Vendor applications': 'طلبات انضمام البائعين', 'Approve': 'موافقة', 'Reject': 'رفض',
+    'Vendor created': 'تم إنشاء البائع', 'Declined': 'مرفوض', 'Reply to customer…': 'ردّ على العميل…',
+    'Send reply': 'إرسال الرد', 'Awaiting customer': 'بانتظار العميل', 'Resolved': 'تم الحل',
+    'Closed': 'مغلق', 'Set normal': 'تعيين عادي', 'Set high': 'تعيين عاجل', 'Pending balances': 'الأرصدة المعلّقة',
+    'Create payout': 'إنشاء دفعة', 'No pending balances.': 'لا أرصدة معلّقة.', 'Payout history': 'سجل المدفوعات',
+    'Mark paid': 'تعليم كمدفوع', 'No payouts yet.': 'لا مدفوعات بعد.', 'Subscriber': 'المشترك',
+    'Started': 'بدأ في', 'No subscriptions yet.': 'لا اشتراكات بعد.', 'Coupons': 'الكوبونات',
+    '+ New coupon': '+ كوبون جديد', 'Min order': 'أقل طلب', 'Disable': 'تعطيل', 'Enable': 'تفعيل',
+    'No coupons yet.': 'لا كوبونات بعد.', 'New coupon': 'كوبون جديد', 'Percent off': 'نسبة خصم',
+    'Flat amount': 'مبلغ ثابت', 'Min order (EGP)': 'أقل طلب (ج.م)', 'Usage limit (optional)': 'حد الاستخدام (اختياري)',
+    'Create coupon': 'إنشاء الكوبون', 'Legal & policy pages': 'الصفحات القانونية والسياسات',
+    'Edit the content of each public policy page. Saved changes go live immediately on the site.': 'عدّل محتوى كل صفحة سياسة عامة. تُنشر التغييرات المحفوظة فورًا على الموقع.',
+    'Page': 'الصفحة', 'Public URL': 'الرابط العام', 'Title': 'العنوان', 'Body (HTML)': 'المحتوى (HTML)',
+    'Save page': 'حفظ الصفحة', 'Preview': 'معاينة', 'Platform settings': 'إعدادات المنصة',
+    'Standard commission (0–1)': 'العمولة القياسية (٠–١)', 'Awal commission (0–1)': 'عمولة Awal (٠–١)',
+    'Lahmetna One price (EGP/mo)': 'سعر Lahmetna One (ج.م/شهر)', 'Lahmetna Awal price (EGP/mo)': 'سعر Lahmetna Awal (ج.م/شهر)',
+    'One member discount (0–1)': 'خصم عضو One (٠–١)', 'Delivery fee (EGP)': 'رسوم التوصيل (ج.م)',
+    'Free delivery over (EGP)': 'توصيل مجاني فوق (ج.م)', 'Member free delivery over (EGP)': 'توصيل مجاني للأعضاء فوق (ج.م)',
+    'Slaughter fee (EGP)': 'رسوم الذبح (ج.م)', 'Save settings': 'حفظ الإعدادات',
+    // product page
+    'No reviews yet': 'لا توجد تقييمات بعد', 'Add to cart ·': 'أضف إلى السلة ·', 'Farm': 'المزرعة',
+    'Freshness': 'الطزاجة', 'Cut / picked to order': 'يُقطع/يُقطف حسب الطلب', 'Customer reviews': 'تقييمات العملاء',
+    'Write a review': 'اكتب تقييمًا', 'Your rating': 'تقييمك', 'Headline': 'العنوان', 'Sum it up': 'لخّصه',
+    'Your review': 'تقييمك', 'Quality, freshness, delivery…': 'الجودة، الطزاجة، التوصيل…', 'Submit review': 'إرسال التقييم',
+    'By posting, you agree to our review guidelines.': 'بالنشر، أنت توافق على إرشادات التقييم لدينا.',
+    'More from this farm line': 'المزيد من هذه المزرعة', 'Sort': 'الترتيب', 'Most recent': 'الأحدث',
+    'Most helpful': 'الأكثر إفادة', 'Highest': 'الأعلى', 'Lowest': 'الأدنى', 'Loading…': 'جارٍ التحميل…',
+    'Back to shop': 'العودة للمتجر', 'Product not found.': 'المنتج غير موجود.', 'Product not specified.': 'لم يُحدَّد المنتج.',
+    // toasts
+    'Address saved': 'تم حفظ العنوان', 'Card saved': 'تم حفظ البطاقة', 'Welcome to Lahmetna One!': 'مرحبًا بك في Lahmetna One!',
+    'Membership cancelled': 'تم إلغاء العضوية', 'Request closed': 'تم إغلاق الطلب', 'Request submitted': 'تم إرسال الطلب',
+    'Profile updated': 'تم تحديث الملف', 'Password updated': 'تم تحديث كلمة المرور', 'Profile saved': 'تم حفظ الملف',
+    'Product deleted': 'تم حذف المنتج', 'Product updated': 'تم تحديث المنتج', 'Product added': 'تمت إضافة المنتج',
+    'Welcome to Lahmetna Awal!': 'مرحبًا بك في Lahmetna Awal!', 'Awal cancelled': 'تم إلغاء Awal',
+    'Vendor updated': 'تم تحديث البائع', 'Order refunded': 'تم استرداد الطلب', 'Order cancelled': 'تم إلغاء الطلب',
+    'Deleted': 'تم الحذف', 'Approved': 'تمت الموافقة', 'Rejected': 'تم الرفض', 'Payout created': 'تم إنشاء الدفعة',
+    'Marked paid': 'تم التعليم كمدفوع', 'Coupon created': 'تم إنشاء الكوبون', 'Settings saved': 'تم حفظ الإعدادات',
+    'Page saved': 'تم حفظ الصفحة', 'Status updated': 'تم تحديث الحالة', 'Suspended': 'تم الإيقاف', 'Unsuspended': 'تم إلغاء الإيقاف'
+  });
+
   function t(en) { return (lang === 'ar' && AR[en]) ? AR[en] : en; }
   function setLang(l) { try { localStorage.setItem('lah_lang', l); } catch (e) {} location.reload(); }
   function tFaq(list) { return (lang !== 'ar') ? list : (list || []).map(function (f) { var a = FAQAR[f.q]; return a ? { q: a.q, a: a.a } : f; }); }
@@ -127,25 +253,42 @@ window.LH = (function () {
     l.href = 'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap';
     document.head.appendChild(l);
   }
-  // translate exact-match text nodes + placeholders under a root (idempotent — Arabic text won't re-match)
+  // exact match, else a "Word (12)" count heading whose base word is known
+  function arFor(s) {
+    if (AR[s]) return AR[s];
+    var m = s.match(/^(.+?) \((\d+)\)$/);
+    return (m && AR[m[1]]) ? AR[m[1]] + ' (' + m[2] + ')' : null;
+  }
+  // translate matching text nodes + placeholders under a root (idempotent — Arabic text won't re-match)
   function translateNode(root) {
     var SKIP = { SCRIPT: 1, STYLE: 1, NOSCRIPT: 1, TEXTAREA: 1 };
     var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function (n) {
       if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
       var p = n.parentElement; if (!p || SKIP[p.tagName]) return NodeFilter.FILTER_REJECT;
       if (p.closest('[dir="ltr"],[data-noi18n],.price,.stars')) return NodeFilter.FILTER_REJECT;
-      return AR[n.nodeValue.trim()] ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      return arFor(n.nodeValue.trim()) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
     } });
     var hits = [], n; while ((n = w.nextNode())) hits.push(n);
-    hits.forEach(function (nd) { var k = nd.nodeValue.trim(); nd.nodeValue = nd.nodeValue.replace(k, AR[k]); });
+    hits.forEach(function (nd) { var k = nd.nodeValue.trim(); nd.nodeValue = nd.nodeValue.replace(k, arFor(k)); });
     (root.querySelectorAll ? root : document).querySelectorAll('[placeholder]').forEach(function (el) {
       var v = el.getAttribute('placeholder'); if (AR[v]) el.setAttribute('placeholder', AR[v]);
     });
   }
+  var _observing = false, _pending = false;
+  function observeDynamic() {
+    if (_observing || !window.MutationObserver) return; _observing = true;
+    // watch only childList (added render output) — never characterData, so our own text
+    // edits can't retrigger the pass; Arabic output won't re-match AR keys anyway.
+    new MutationObserver(function () {
+      if (_pending) return; _pending = true;
+      // setTimeout (not rAF) so it still fires when the tab is backgrounded
+      setTimeout(function () { _pending = false; translateNode(document.body); }, 16);
+    }).observe(document.body, { childList: true, subtree: true });
+  }
   function applyLang(root) {
     if (lang !== 'ar') return;
     document.documentElement.lang = 'ar'; document.documentElement.dir = 'rtl';
-    injectArFont(); translateNode(root || document.body);
+    injectArFont(); translateNode(root || document.body); observeDynamic();
   }
 
   /* presentation maps */
@@ -389,6 +532,7 @@ window.LH = (function () {
     loadMe: loadMe, logout: logout, get me() { return me; },
     boot: boot, mountChrome: mountChrome, open: open, close: close,
     get lang() { return lang; }, t: t, setLang: setLang, applyLang: applyLang, tFaq: tFaq,
+    arName: function (id) { return (lang === 'ar' && PRODAR[id]) ? PRODAR[id] : null; },
     card: card, st: st, planBadge: planBadge, ticketThread: ticketThread, tabs: tabs, modal: modal
   };
 })();
