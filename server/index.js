@@ -14,6 +14,19 @@ const ROOT = path.join(__dirname, '..');
 const PORT = process.env.PORT || 4173;
 const MIME = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json' };
 
+/* seo-runtime (@omary98/seo-runtime-core) — hub health/sync/pages/pending-approve proxy plus
+   article ingest, wired directly against core's exports rather than pulling in the express
+   package: this backend is deliberately zero-dependency and core has no Express coupling.
+   ESM-only package, this file is CommonJS, so it's loaded once at startup (see initSeo()
+   near the bottom, awaited before .listen()) rather than per request. */
+let seo = null;
+async function initSeo() {
+  const core = await import('@omary98/seo-runtime-core');
+  const store = new core.JsonFileStore(path.join(ROOT, 'data', 'seo-runtime.json'));
+  seo = { core, store, version: '0.1.3' };
+  core.startSync(store, { version: seo.version });
+}
+
 /* ---- helpers ---- */
 function json(res, code, obj, headers) {
   res.writeHead(code, Object.assign({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }, headers || {}));
@@ -54,6 +67,39 @@ async function api(req, res, url) {
   const seg = url.pathname.split('/').filter(Boolean).slice(1); // after 'api'
   const m = req.method;
   const me = currentUser(req);
+
+  /* ---------- seo-runtime (hub integration) ---------- */
+  if (seg[0] === 'seo' || (seg[0] === 'articles' && seg.length === 1)) {
+    const { bearerOf, timingSafeSecret, readConfig } = seo.core;
+    if (seg[0] === 'articles') {
+      if (m !== 'POST') return json(res, 404, { error: 'not found' });
+      if (!timingSafeSecret(bearerOf(req.headers.authorization), readConfig().secret)) return json(res, 401, { error: 'unauthorized' });
+      const body = await readBody(req);
+      const settings = (await seo.store.getSettings()) ?? seo.core.EMPTY_SETTINGS;
+      const out = await seo.core.ingestArticles(seo.store, body, {
+        supported: ['ar', 'en'],
+        urlFor: (lang, slug) => seo.core.absoluteUrl(settings, lang, `/${lang}/blog/${slug}`),
+      });
+      return json(res, out.status, out.body);
+    }
+    // GET /sitemap.xml and /robots.txt above are this site's own — the runtime's routes are
+    // only mounted under /api/seo, so there is no collision to resolve there.
+    if (!timingSafeSecret(bearerOf(req.headers.authorization), readConfig().secret)) return json(res, 401, { error: 'unauthorized' });
+    if (m === 'GET' && seg[1] === 'health') return json(res, 200, await seo.core.healthPayload(seo.store, seo.version, readConfig().slug));
+    if (m === 'POST' && seg[1] === 'sync') {
+      const body = await readBody(req);
+      const result = await seo.core.applySnapshot(seo.store, body);
+      return json(res, result.status === 'invalid' ? 400 : 200, result);
+    }
+    if (m === 'GET' && seg[1] === 'pages') return json(res, 200, { pages: [] });
+    if (m === 'GET' && seg[1] === 'pending') { const out = await seo.core.proxyPending(seo.store); return json(res, out.status, out.body); }
+    if (m === 'POST' && ['approve', 'reject', 'publish-now'].includes(seg[1])) {
+      const body = await readBody(req);
+      const out = await seo.core.proxyApprovalAction(seo.store, seg[1], String(body.jobId || ''), { approvedBy: String(body.approvedBy || ''), note: body.note });
+      return json(res, out.status, out.body);
+    }
+    return json(res, 404, { error: 'not found' });
+  }
 
   /* ---------- auth ---------- */
   if (seg[0] === 'auth') {
@@ -475,15 +521,31 @@ function serveStatic(req, res, url) {
   });
 }
 
-http.createServer(async (req, res) => {
-  const url = new URL(req.url, baseUrl(req));
-  try {
-    if (url.pathname.startsWith('/api/')) return await api(req, res, url);
-    if (req.method !== 'GET') return json(res, 405, { error: 'method not allowed' });
-    if (url.pathname === '/sitemap.xml') { res.writeHead(200, { 'content-type': 'application/xml; charset=utf-8' }); return res.end(sitemapXml(req)); }
-    if (url.pathname === '/robots.txt') { res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' }); return res.end(robotsTxt(req)); }
-    serveStatic(req, res, url);
-  } catch (e) {
-    json(res, /bad body|too large/.test(e.message) ? 400 : 500, { error: e.message || 'server error' });
-  }
-}).listen(PORT, () => console.log('Lahmetna running → http://localhost:' + PORT + '  (PayTabs: ' + (paytabs.configured() ? 'LIVE' : 'test/mock') + ')'));
+initSeo().then(() => {
+  http.createServer(async (req, res) => {
+    const url = new URL(req.url, baseUrl(req));
+    try {
+      // Hub-pushed redirects, ahead of any other dispatch — mirrors
+      // packages/express/src/index.ts's redirect middleware. redirectFor itself unions /api and
+      // /admin into whatever reservedPrefixes it's given, so calling it unconditionally here
+      // (even for /api/* requests) is safe: it always returns null for those.
+      const snapshot = await seo.store.getSnapshot().catch(() => null);
+      const hit = await seo.core.redirectFor(seo.store, url.pathname, snapshot?.settings.reservedPrefixes);
+      if (hit) { res.writeHead(hit.status, { location: hit.destination }); return res.end(); }
+
+      if (url.pathname.startsWith('/api/')) return await api(req, res, url);
+      if (req.method !== 'GET') return json(res, 405, { error: 'method not allowed' });
+      if (url.pathname === '/sitemap.xml') { res.writeHead(200, { 'content-type': 'application/xml; charset=utf-8' }); return res.end(sitemapXml(req)); }
+      if (url.pathname === '/robots.txt') { res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' }); return res.end(robotsTxt(req)); }
+      serveStatic(req, res, url);
+    } catch (e) {
+      json(res, /bad body|too large/.test(e.message) ? 400 : 500, { error: e.message || 'server error' });
+    }
+  }).listen(PORT, () => console.log('Lahmetna running → http://localhost:' + PORT + '  (PayTabs: ' + (paytabs.configured() ? 'LIVE' : 'test/mock') + ')'));
+}).catch((err) => {
+  // A store that can't even initialize (e.g. an unwritable JsonFileStore path) means every
+  // seo-runtime route would silently 500 forever; fail the whole process at boot instead of
+  // limping along without the hub integration.
+  console.error('[seo-runtime] failed to initialize:', err);
+  process.exit(1);
+});
