@@ -508,7 +508,7 @@ function serveStatic(req, res, url) {
   if (!rootFile && !rel.startsWith('/assets/')) { res.writeHead(404); return res.end('Not found'); }
   const filePath = path.join(ROOT, rel);
   if (!filePath.startsWith(ROOT + path.sep)) { res.writeHead(403); return res.end('Forbidden'); }
-  fs.readFile(filePath, (err, buf) => {
+  fs.readFile(filePath, async (err, buf) => {
     if (err) { res.writeHead(404, { 'content-type': 'text/plain' }); return res.end('Not found'); }
     const ext = path.extname(filePath).toLowerCase();
     const cache = /\.(html|css|js|webmanifest)$/.test(ext) ? 'no-cache' : 'public, max-age=3600';
@@ -516,9 +516,33 @@ function serveStatic(req, res, url) {
     if (ext === '.html' && buf.includes('%%ORIGIN%%')) {
       buf = Buffer.from(String(buf).replaceAll('%%ORIGIN%%', baseUrl(req)));
     }
+    if (ext === '.html') buf = await applyHubSeo(buf, url.pathname);
     res.writeHead(200, { 'content-type': MIME[ext] || 'application/octet-stream', 'cache-control': cache });
     res.end(buf);
   });
+}
+
+/* Hub SEO overrides (@omary98/seo-runtime-core): a non-empty hub title/description must win
+   over this page's own static <title>/<meta description> — the site's own tag is only the
+   fallback for when the hub has none. Applied to every static HTML response so admin overrides
+   and title experiments actually take effect, not just to hand-picked pages. Canonical/OG/
+   hreflang are untouched here — out of scope, and resolveSeo's own precedence already covers
+   them elsewhere. */
+async function applyHubSeo(buf, pathname) {
+  let resolved;
+  try { resolved = await seo.core.resolveSeo(seo.store, pathname, 'en'); } catch (e) { return buf; }
+  if (!resolved.title && !resolved.description) return buf;
+  let html = String(buf);
+  if (resolved.title) html = html.replace(/<title>[\s\S]*?<\/title>/, '<title>' + xmlEsc(resolved.title) + '</title>');
+  if (resolved.description) {
+    const desc = '<meta name="description" content="' + xmlEsc(resolved.description) + '">';
+    html = /<meta name="description"[^>]*>/.test(html) ? html.replace(/<meta name="description"[^>]*>/, desc) : html.replace('</title>', '</title>\n' + desc);
+  }
+  // Bridge for pages whose own JS computes a title after data loads (e.g. product.js) — let
+  // them prefer the hub value too instead of unconditionally clobbering it back.
+  const bridge = JSON.stringify({ title: resolved.title || '', description: resolved.description || '' }).replace(/</g, '\\u003c');
+  html = html.replace('</head>', '<script>window.__HUB_SEO__=' + bridge + ';</script>\n</head>');
+  return Buffer.from(html);
 }
 
 initSeo().then(() => {
