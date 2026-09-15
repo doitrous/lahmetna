@@ -508,7 +508,7 @@ function serveStatic(req, res, url) {
   if (!rootFile && !rel.startsWith('/assets/')) { res.writeHead(404); return res.end('Not found'); }
   const filePath = path.join(ROOT, rel);
   if (!filePath.startsWith(ROOT + path.sep)) { res.writeHead(403); return res.end('Forbidden'); }
-  fs.readFile(filePath, (err, buf) => {
+  fs.readFile(filePath, async (err, buf) => {
     if (err) { res.writeHead(404, { 'content-type': 'text/plain' }); return res.end('Not found'); }
     const ext = path.extname(filePath).toLowerCase();
     const cache = /\.(html|css|js|webmanifest)$/.test(ext) ? 'no-cache' : 'public, max-age=3600';
@@ -516,9 +516,45 @@ function serveStatic(req, res, url) {
     if (ext === '.html' && buf.includes('%%ORIGIN%%')) {
       buf = Buffer.from(String(buf).replaceAll('%%ORIGIN%%', baseUrl(req)));
     }
+    if (ext === '.html') buf = await applyHubSeo(buf, url.pathname);
     res.writeHead(200, { 'content-type': MIME[ext] || 'application/octet-stream', 'cache-control': cache });
     res.end(buf);
   });
+}
+
+/* Hub SEO overrides (@omary98/seo-runtime-core): an EXPLICIT, non-empty admin override must win
+   over this page's own static <title>/<meta description> — the site's own tag is the fallback
+   otherwise. Deliberately reads the raw page record via store.getPage() rather than
+   seo.core.resolveSeo(): resolveSeo's composed `title` always templates page.title (or falls
+   back further to the org name) when there's no seoTitle override, so it is never really empty
+   — treating "resolved title is non-empty" as "replace it" would rewrite every page's <title>
+   to something generic the moment a hub snapshot syncs, even pages with no override at all.
+   `description` has no such fallback (composeSeo: `seo?.metaDescription ?? ''`), so reading it
+   raw is equivalent but keeping both on one raw record avoids a second, inconsistent source of
+   truth. Canonical/OG/hreflang are untouched here — out of scope. */
+async function rawOverride(store, pth, lang) {
+  try {
+    const page = await store.getPage(pth, lang);
+    return { title: page?.seo?.seoTitle?.trim() || null, description: page?.seo?.metaDescription?.trim() || null };
+  } catch {
+    return { title: null, description: null };
+  }
+}
+async function applyHubSeo(buf, pathname) {
+  const { title, description } = await rawOverride(seo.store, pathname, 'en');
+  if (!title && !description) return buf;
+  let html = String(buf);
+  if (title) html = html.replace(/<title>[\s\S]*?<\/title>/, '<title>' + xmlEsc(title) + '</title>');
+  if (description) {
+    const desc = '<meta name="description" content="' + xmlEsc(description) + '">';
+    html = /<meta name="description"[^>]*>/.test(html) ? html.replace(/<meta name="description"[^>]*>/, desc) : html.replace('</title>', '</title>\n' + desc);
+  }
+  // Bridge for pages whose own JS computes a title after data loads (e.g. product.js) — only a
+  // real, explicit override rides along; product.js already treats a falsy bridge title as
+  // "no override" and keeps its own computed title.
+  const bridge = JSON.stringify({ title: title || '', description: description || '' }).replace(/</g, '\\u003c');
+  html = html.replace('</head>', '<script>window.__HUB_SEO__=' + bridge + ';</script>\n</head>');
+  return Buffer.from(html);
 }
 
 initSeo().then(() => {

@@ -61,6 +61,36 @@ async function waitForServer(timeoutMs) {
     assert.strictEqual(redirect.status, 301, 'GET /old-path must 301, not fall through to a 404');
     assert.strictEqual(redirect.headers.get('location'), '/new-path');
 
+    // Regression: a hub page record with NO real seoTitle (empty/whitespace-only) must leave the
+    // static page's own <title> completely untouched — composeSeo/resolveSeo's `title` is never
+    // really empty (it templates page.title, or falls back to the org name), so a fix that
+    // replaces the tag whenever resolveSeo's title is non-empty ends up rewriting every page's
+    // title once a snapshot syncs, even with no admin override at all.
+    const syncBlank = await fetch(base + '/api/seo/sync', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + SEO_SECRET, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        version: 2, siteSlug: 'lahmetna', settings: {}, redirects: [],
+        pages: [{ path: '/', lang: 'en', seo: { seoTitle: '   ', metaDescription: '' } }],
+      }),
+    });
+    assert.strictEqual((await syncBlank.json()).status, 'applied', 'sync with a blank seoTitle must be accepted');
+    const homeAfterBlank = await fetch(base + '/').then((r) => r.text());
+    assert.strictEqual(homeAfterBlank, home, 'a blank hub seoTitle must not change the served HTML at all');
+
+    // A real, explicit seoTitle must win over the page's own static <title>.
+    const syncReal = await fetch(base + '/api/seo/sync', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + SEO_SECRET, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        version: 3, siteSlug: 'lahmetna', settings: {}, redirects: [],
+        pages: [{ path: '/', lang: 'en', seo: { seoTitle: 'Custom Home Title', metaDescription: '' } }],
+      }),
+    });
+    assert.strictEqual((await syncReal.json()).status, 'applied', 'sync with a real seoTitle must be accepted');
+    const homeAfterReal = await fetch(base + '/').then((r) => r.text());
+    assert.ok(homeAfterReal.includes('<title>Custom Home Title</title>'), 'an explicit hub seoTitle must replace the static <title>');
+
     console.log('smoke test passed');
   } finally {
     server.kill();

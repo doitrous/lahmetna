@@ -9,7 +9,8 @@
   function renderProduct(data) {
     product = data.product; var v = data.vendor, s = data.summary;
     if (LH.arName(product.id)) product.name = LH.arName(product.id);
-    document.title = product.name.split(' · ')[0] + ' · Lahmetna';
+    var hubTitle = window.__HUB_SEO__ && window.__HUB_SEO__.title;
+    document.title = hubTitle || (product.name.split(' · ')[0] + ' · Lahmetna');
     var priceBlock = product.type === 'livestock'
       ? '<div class="price" style="font-size:26px">' + money(product.price) + '</div><div class="muted" style="font-size:13px;margin-top:2px">Est. ' + product.weight_kg + 'kg · ' + money(product.price_per_kg) + '/kg live weight</div>'
       : '<div class="price" style="font-size:26px">' + money(product.price) + '</div><div class="muted" style="font-size:13px;margin-top:2px">per ' + esc(product.unit) + '</div>';
