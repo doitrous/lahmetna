@@ -12,6 +12,6 @@
     "node": ">=22.5.0"
   },
   "dependencies": {
-    "@omary98/seo-runtime-core": "0.1.4"
+    "@omary98/seo-runtime-core": "^0.1.6"
   }
 }

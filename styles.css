@@ -257,7 +257,7 @@ input[type=checkbox],input[type=radio]{accent-color:var(--burgundy);width:19px;h
 
 /* ---- footer ---- */
 .footer{margin-top:64px;background:var(--burgundy);color:#fff;border:none}
-.footer .cols{padding:44px 0 38px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px}
+.footer .cols{padding:44px 0 38px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:44px}
 .footer .logo,.footer .wm{color:#fff}
 .footer .wm .dot{color:var(--champagne)}
 .footer h4{font-family:var(--font-ui);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin:0 0 16px;color:#ead9df}
@@ -267,6 +267,11 @@ input[type=checkbox],input[type=radio]{accent-color:var(--burgundy);width:19px;h
 .footer .pill{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);color:#f0dbe2}
 .footer .base{margin-top:44px;padding:20px 0;border-top:1px solid rgba(255,255,255,.13);display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:#d6bdc7}
 .footer .base a:hover{color:var(--champagne)}
+
+/* ---- share block (@omary98/seo-runtime-core's shareBlockHtml) ---- */
+.seo-share{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:22px 0;margin:12px 0}
+.seo-share a,.seo-share button{font-family:var(--font-ui);font-size:13px;font-weight:600;color:var(--burgundy);background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:8px 16px;cursor:pointer;text-decoration:none}
+.seo-share a:hover,.seo-share button:hover{background:#f1e6eb}
 
 /* ---- page header band ---- */
 .page-head{border-bottom:1px solid var(--line)}
