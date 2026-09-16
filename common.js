@@ -45,6 +45,11 @@ window.LH = (function () {
     'Cash on delivery': 'الدفع عند الاستلام', 'Shop': 'تسوّق', 'Company': 'الشركة', 'Help': 'المساعدة',
     'Poultry & Eggs': 'دواجن وبيض', 'Vegetables & Fruit': 'خضروات وفاكهة', 'How it works': 'كيف نعمل',
     'Sustainability': 'الاستدامة', 'Careers': 'الوظائف', 'FAQs': 'الأسئلة الشائعة',
+    // popular searches (footer) — real category pages, per V2-PHASE-8's hierarchy requirement
+    'Popular searches': 'الأكثر بحثًا', 'Fresh Beef': 'لحم بقري طازج', 'Lamb & Goat Meat': 'لحم ضأن وماعز',
+    'Free-Range Poultry': 'دواجن تربية حرة', 'Farm Fresh Eggs': 'بيض بلدي طازج', 'Fresh Dairy': 'ألبان طازجة',
+    'Fresh Vegetables': 'خضروات طازجة', 'Seasonal Fruit': 'فاكهة موسمية', 'Live Livestock': 'مواشٍ حية',
+    'Editorial guidelines': 'معايير التحرير',
     'Delivery & cold-chain': 'التوصيل والتبريد', 'Returns & refunds': 'الإرجاع والاسترداد',
     '© 2026 Lahmetna. Raised right, priced fair.': '© ٢٠٢٦ لحمتنا. تربية سليمة وسعر عادل.',
     'Privacy': 'الخصوصية', 'Terms': 'الشروط', 'Cookies': 'ملفات تعريف الارتباط', 'Halal certification': 'شهادة الحلال',
@@ -376,6 +381,21 @@ window.LH = (function () {
     { l: 'Fruit', href: 'index.html?cat=Fruit#shop' }, { l: 'Livestock', href: 'index.html?cat=Livestock#shop' },
     { l: 'Reviews', href: 'index.html#reviews' }, { l: 'FAQ', href: 'index.html#faq' }
   ];
+  // Footer "Popular searches" — real category-level pages (this site's home → category → item
+  // hierarchy for a Shop vertical is home / cat=<Category> / product.html?id=<id>), not
+  // individual products and not placeholder URLs. 8 of the 9 real categories in data.js's
+  // `cats` (all but Honey, to land in the 6-8 target); same href works for both languages since
+  // language here is a client-side toggle, not a separate URL — only the label translates.
+  var POPULAR_SEARCHES = [
+    { l: 'Fresh Beef', href: 'index.html?cat=Beef#shop' },
+    { l: 'Lamb & Goat Meat', href: 'index.html?cat=Lamb%20%26%20Goat#shop' },
+    { l: 'Free-Range Poultry', href: 'index.html?cat=Poultry#shop' },
+    { l: 'Farm Fresh Eggs', href: 'index.html?cat=Eggs#shop' },
+    { l: 'Fresh Dairy', href: 'index.html?cat=Dairy#shop' },
+    { l: 'Fresh Vegetables', href: 'index.html?cat=Vegetables#shop' },
+    { l: 'Seasonal Fruit', href: 'index.html?cat=Fruit#shop' },
+    { l: 'Live Livestock', href: 'index.html?cat=Livestock#shop' }
+  ];
   function headerHTML() {
     return '' +
     '<div class="utility"><div class="wrap">' +
@@ -411,7 +431,8 @@ window.LH = (function () {
       '<div class="row" style="gap:10px;margin-top:18px"><span class="pill">Cash on delivery</span><span class="pill">Visa · Meeza · PayTabs</span></div></div>' +
       '<div><h4>Shop</h4><div class="links"><a href="index.html?cat=Beef#shop">Beef</a><a href="index.html?cat=Lamb%20%26%20Goat#shop">Lamb &amp; Goat</a><a href="index.html?cat=Poultry#shop">Poultry &amp; Eggs</a><a href="index.html?cat=Vegetables#shop">Vegetables &amp; Fruit</a><a href="index.html?cat=Livestock#shop">Livestock</a></div></div>' +
       '<div><h4>Company</h4><div class="links"><a href="apply.html">Sell on Lahmetna</a><a href="index.html#faq">How it works</a><a href="#">Sustainability</a><a href="#">Careers</a></div></div>' +
-      '<div><h4>Help</h4><div class="links"><a href="index.html#faq">FAQs</a><a href="legal.html?doc=shipping">Delivery &amp; cold-chain</a><a href="legal.html?doc=refunds">Returns &amp; refunds</a><a href="login.html">My account</a></div></div>' +
+      '<div><h4>Help</h4><div class="links"><a href="index.html#faq">FAQs</a><a href="help">Help centre</a><a href="legal.html?doc=shipping">Delivery &amp; cold-chain</a><a href="legal.html?doc=refunds">Returns &amp; refunds</a><a href="editorial-guidelines">Editorial guidelines</a><a href="login.html">My account</a></div></div>' +
+      '<div><h4>Popular searches</h4><div class="links">' + POPULAR_SEARCHES.map(function (s) { return '<a href="' + s.href + '">' + esc(t(s.l)) + '</a>'; }).join('') + '</div></div>' +
       '</div><div class="base"><span>© 2026 Lahmetna. Raised right, priced fair.</span><div class="row" style="gap:22px;flex-wrap:wrap"><a href="legal.html?doc=privacy">Privacy</a><a href="legal.html?doc=terms">Terms</a><a href="legal.html?doc=cookies">Cookies</a><a href="legal.html?doc=halal">Halal certification</a></div></div></div></footer>';
   }
   function cartHTML() {

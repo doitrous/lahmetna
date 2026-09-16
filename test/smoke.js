@@ -91,6 +91,33 @@ async function waitForServer(timeoutMs) {
     const homeAfterReal = await fetch(base + '/').then((r) => r.text());
     assert.ok(homeAfterReal.includes('<title>Custom Home Title</title>'), 'an explicit hub seoTitle must replace the static <title>');
 
+    // V2-PHASE-8 Workstream D: /help, /help/[slug], /editorial-guidelines + the share block.
+    assert.ok(home.includes('class="seo-share"'), 'homepage must carry the share block');
+
+    const product = await fetch(base + '/product.html?id=ribeye').then((r) => r.text());
+    assert.ok(product.includes('class="seo-share"'), 'a product page must carry the share block');
+    assert.ok(product.includes('data-title="Dry-Aged Ribeye'), 'product share block title must reflect the actual product, not a generic fallback');
+
+    const help = await fetch(base + '/help').then((r) => r.text());
+    assert.strictEqual((await fetch(base + '/help')).status, 200, '/help must render 200 even with no hub help entries synced');
+    assert.ok(help.includes('<h1>Help</h1>'), '/help must render the runtime\'s empty-state body');
+    assert.ok(help.includes('class="seo-share"'), '/help must carry the share block');
+
+    const helpArabic = await fetch(base + '/help?lang=ar').then((r) => r.text());
+    assert.ok(helpArabic.includes('dir="rtl"'), '/help?lang=ar must render rtl');
+
+    const helpMissing = await fetch(base + '/help/no-such-slug');
+    assert.strictEqual(helpMissing.status, 404, 'an unknown /help/[slug] must 404, not render an empty page as if it existed');
+
+    const editorial = await fetch(base + '/editorial-guidelines');
+    assert.strictEqual(editorial.status, 200, '/editorial-guidelines must render 200 even with no hub editorial content synced');
+    const editorialBody = await editorial.text();
+    assert.ok(editorialBody.includes('Editorial guidelines'), '/editorial-guidelines must render the runtime\'s empty-state body');
+    assert.ok(editorialBody.includes('class="seo-share"'), '/editorial-guidelines must carry the share block');
+
+    const healthShare = await fetch(base + '/api/seo/health', { headers: { Authorization: 'Bearer ' + SEO_SECRET } }).then((r) => r.json());
+    assert.strictEqual(healthShare.share, true, '/api/seo/health must report share: true now that the share block is wired in');
+
     console.log('smoke test passed');
   } finally {
     server.kill();

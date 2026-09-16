@@ -24,7 +24,11 @@ async function initSeo() {
   const core = await import('@omary98/seo-runtime-core');
   const store = new core.JsonFileStore(path.join(ROOT, 'data', 'seo-runtime.json'));
   seo = { core, store, version: core.RUNTIME_VERSION };
-  core.startSync(store, { version: seo.version });
+  // share: true — explicit now that <ShareBlock/>-equivalent markup (shareBlockHtml, called
+  // directly since this backend has no React/Next to host @omary98/seo-runtime-next's
+  // <ShareBlock/> component) is wired into every content page below, so /api/seo/health reports
+  // it accurately instead of relying on core's own true-by-default.
+  core.startSync(store, { version: seo.version, share: true });
 }
 
 /* ---- helpers ---- */
@@ -85,7 +89,7 @@ async function api(req, res, url) {
     // GET /sitemap.xml and /robots.txt above are this site's own — the runtime's routes are
     // only mounted under /api/seo, so there is no collision to resolve there.
     if (!timingSafeSecret(bearerOf(req.headers.authorization), readConfig().secret)) return json(res, 401, { error: 'unauthorized' });
-    if (m === 'GET' && seg[1] === 'health') return json(res, 200, await seo.core.healthPayload(seo.store, seo.version, readConfig().slug));
+    if (m === 'GET' && seg[1] === 'health') return json(res, 200, await seo.core.healthPayload(seo.store, seo.version, readConfig().slug, true));
     if (m === 'POST' && seg[1] === 'sync') {
       const body = await readBody(req);
       const result = await seo.core.applySnapshot(seo.store, body);
@@ -499,6 +503,128 @@ function robotsTxt(req) {
   ].join('\n');
 }
 
+/* ---- SEO: /help, /help/[slug], /editorial-guidelines (@omary98/seo-runtime-core v0.1.6) ----
+   Locale-free per the runtime's own contract: this site has no [lang] path segment anywhere
+   (language is a client-side localStorage toggle — see common.js's AR dict / applyLang), so
+   these three routes pick language the same way the reference Next site-template's locale-free
+   routes do: `?lang=`. findHelpEntry/helpIndexBodyHtml/helpBodyHtml/editorialBodyHtml already
+   render a sane 200 empty state with no hub data at all — no 404/500 guard added here for that. */
+const LOCALES = ['en', 'ar'];
+function langOf(url) { return url.searchParams.get('lang') === 'ar' ? 'ar' : 'en'; }
+async function seoSettings() { return (await seo.store.getSettings().catch(() => null)) ?? seo.core.EMPTY_SETTINGS; }
+
+/* <title>/description/canonical/hreflang/robots/OG/twitter/JSON-LD — resolveSeo does the actual
+   composition (hub overrides > page-type defaults > site settings), same as this repo's own
+   applyHubSeo does for static pages, just the full version these brand-new routes need since
+   they carry no static <title>/<meta> of their own to fall back to. */
+function metaHead(resolved, barePath) {
+  const alt = Object.assign({}, seo.core.localeFreeAlternates(LOCALES, barePath), resolved.alternates);
+  const tags = [
+    '<title>' + xmlEsc(resolved.title) + '</title>',
+    '<meta name="description" content="' + xmlEsc(resolved.description) + '">',
+    '<link rel="canonical" href="' + xmlEsc(resolved.canonical) + '">',
+    '<meta name="robots" content="' + (resolved.robots.index ? 'index' : 'noindex') + ',' + (resolved.robots.follow ? 'follow' : 'nofollow') + '">',
+  ];
+  Object.keys(alt).forEach((l) => tags.push('<link rel="alternate" hreflang="' + xmlEsc(l) + '" href="' + xmlEsc(alt[l]) + '">'));
+  tags.push(
+    '<meta property="og:type" content="website">',
+    '<meta property="og:site_name" content="Lahmetna">',
+    '<meta property="og:title" content="' + xmlEsc(resolved.og.title || resolved.title) + '">',
+    '<meta property="og:description" content="' + xmlEsc(resolved.og.description || resolved.description) + '">',
+    '<meta property="og:url" content="' + xmlEsc(resolved.canonical) + '">'
+  );
+  if (resolved.og.image) tags.push('<meta property="og:image" content="' + xmlEsc(resolved.og.image) + '">');
+  tags.push('<meta name="twitter:card" content="' + (resolved.twitter.image ? 'summary_large_image' : 'summary') + '">');
+  if (resolved.twitter.image) tags.push('<meta name="twitter:image" content="' + xmlEsc(resolved.twitter.image) + '">');
+  tags.push(seo.core.verificationMetaTags(resolved.verification));
+  tags.push(seo.core.jsonLdScript(resolved.jsonld));
+  return tags.join('\n');
+}
+
+/* Same shell every other top-level page uses (site-header/site-footer placeholders hydrated by
+   common.js) — absolute-rooted asset paths (not the bare `styles.css` the flat pages use) since
+   /help/{slug} is one segment deeper and a relative href there would resolve under /help/. */
+function pageShell({ lang, head, bodyHtml, shareHtml }) {
+  return '<!doctype html>\n<html lang="' + lang + '"' + (lang === 'ar' ? ' dir="rtl"' : '') + '>\n<head>\n' +
+    '<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
+    head + '\n' +
+    '<meta name="theme-color" content="#691e36">\n' +
+    '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap">\n' +
+    '<link rel="icon" href="/assets/logo.png">\n<link rel="stylesheet" href="/styles.css">\n' +
+    '</head>\n<body>\n' +
+    // Mirrors the requested ?lang= into the client-side toggle so the server-rendered content
+    // above and the client-hydrated header/footer chrome below agree on a language.
+    '<script>(function(){try{localStorage.setItem("lah_lang","' + (lang === 'ar' ? 'ar' : 'en') + '");}catch(e){}})();</script>\n' +
+    '<div id="site-header"></div>\n' +
+    '<main class="wrap legal" style="padding:44px 0 80px">' + bodyHtml + shareHtml + '</main>\n' +
+    '<div id="site-footer"></div>\n' +
+    '<script src="/common.js"></script>\n<script>LH.boot();</script>\n' +
+    '</body>\n</html>\n';
+}
+function sendHtml(res, html, status) {
+  res.writeHead(status || 200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-cache' });
+  res.end(html);
+}
+function notFoundPage(lang) {
+  return pageShell({
+    lang, head: '<title>' + xmlEsc('Not found · Lahmetna') + '</title><meta name="robots" content="noindex,nofollow">',
+    bodyHtml: '<h1>Not found</h1><p>This page is not available. <a href="/">Return home →</a></p>', shareHtml: '',
+  });
+}
+
+async function helpIndexPage(req, res, url) {
+  const lang = langOf(url);
+  const settings = await seoSettings();
+  const resolved = await seo.core.resolveSeo(seo.store, '/help', lang);
+  const bodyHtml = seo.core.helpIndexBodyHtml(settings, lang);
+  const shareHtml = seo.core.shareBlockHtml({ url: resolved.canonical, title: 'Help' });
+  sendHtml(res, pageShell({ lang, head: metaHead(resolved, '/help'), bodyHtml, shareHtml }));
+}
+async function helpEntryPage(req, res, url, slug) {
+  const lang = langOf(url);
+  const settings = await seoSettings();
+  const entry = seo.core.findHelpEntry(settings, slug, lang);
+  if (!entry) return sendHtml(res, notFoundPage(lang), 404);
+  const barePath = '/help/' + encodeURIComponent(slug);
+  const resolved = await seo.core.resolveSeo(seo.store, barePath, lang);
+  resolved.jsonld = resolved.jsonld.concat([seo.core.helpArticleJsonLd(entry, seo.core.absoluteUrl(settings, lang, barePath))]);
+  const bodyHtml = seo.core.helpBodyHtml(entry);
+  const shareHtml = seo.core.shareBlockHtml({ url: resolved.canonical, title: entry.question });
+  sendHtml(res, pageShell({ lang, head: metaHead(resolved, barePath), bodyHtml, shareHtml }));
+}
+async function editorialPage(req, res, url) {
+  const lang = langOf(url);
+  const settings = await seoSettings();
+  const resolved = await seo.core.resolveSeo(seo.store, '/editorial-guidelines', lang);
+  const bodyHtml = seo.core.editorialBodyHtml(settings);
+  const shareHtml = seo.core.shareBlockHtml({ url: resolved.canonical, title: 'Editorial guidelines' });
+  sendHtml(res, pageShell({ lang, head: metaHead(resolved, '/editorial-guidelines'), bodyHtml, shareHtml }));
+}
+
+/* ---- share block for the existing static content pages (home + category, product) ----
+   shareBlockHtml is the exact markup @omary98/seo-runtime-next's <ShareBlock/> renders (it's a
+   one-line passthrough — see the package's dist/jsonld.js) — called directly here since this
+   backend is deliberately React/Next-free. Injected via the same %%TOKEN%% buffer-replace pass
+   serveStatic already runs for %%ORIGIN%%, keyed off a %%SHARE%% marker placed once in each
+   template (index.html, product.html) right where the reference puts <ShareBlock/>: under the
+   main content, above the footer. Never added to any tool-embed-style page (this site has none
+   — no tools). */
+function shareForStaticPage(req, url) {
+  const pathname = url.pathname === '/' ? '/index.html' : url.pathname;
+  const fullUrl = baseUrl(req) + url.pathname + (url.search || '');
+  if (pathname === '/index.html') {
+    const cat = url.searchParams.get('cat');
+    return { url: fullUrl, title: (cat ? cat + ' · ' : '') + 'Lahmetna — Natural Meat & Fresh Farm Produce' };
+  }
+  if (pathname === '/product.html') {
+    const id = url.searchParams.get('id');
+    const p = id ? q.product(id) : null;
+    return { url: fullUrl, title: (p ? p.name + ' · ' : '') + 'Lahmetna' };
+  }
+  return null;
+}
+
 /* ---- static (allowlisted, traversal-safe) ---- */
 function serveStatic(req, res, url) {
   let rel = decodeURIComponent(url.pathname);
@@ -515,6 +641,10 @@ function serveStatic(req, res, url) {
     // inject the request origin so social/SEO tags carry absolute URLs wherever deployed
     if (ext === '.html' && buf.includes('%%ORIGIN%%')) {
       buf = Buffer.from(String(buf).replaceAll('%%ORIGIN%%', baseUrl(req)));
+    }
+    if (ext === '.html' && buf.includes('%%SHARE%%')) {
+      const s = shareForStaticPage(req, url);
+      buf = Buffer.from(String(buf).replace('%%SHARE%%', s ? seo.core.shareBlockHtml(s) : ''));
     }
     if (ext === '.html') buf = await applyHubSeo(buf, url.pathname);
     res.writeHead(200, { 'content-type': MIME[ext] || 'application/octet-stream', 'cache-control': cache });
@@ -573,6 +703,13 @@ initSeo().then(() => {
       if (req.method !== 'GET') return json(res, 405, { error: 'method not allowed' });
       if (url.pathname === '/sitemap.xml') { res.writeHead(200, { 'content-type': 'application/xml; charset=utf-8' }); return res.end(sitemapXml(req)); }
       if (url.pathname === '/robots.txt') { res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' }); return res.end(robotsTxt(req)); }
+      // Registered ahead of serveStatic's allowlist on purpose: serveStatic only serves a fixed
+      // set of root *.ext files plus /assets/*, so it would 404 these on its own — order here is
+      // what keeps it from ever swallowing /help, /help/*, /editorial-guidelines.
+      if (url.pathname === '/help') return await helpIndexPage(req, res, url);
+      if (url.pathname === '/editorial-guidelines') return await editorialPage(req, res, url);
+      const helpSlug = /^\/help\/([^/]+)$/.exec(url.pathname);
+      if (helpSlug) return await helpEntryPage(req, res, url, decodeURIComponent(helpSlug[1]));
       serveStatic(req, res, url);
     } catch (e) {
       json(res, /bad body|too large/.test(e.message) ? 400 : 500, { error: e.message || 'server error' });
