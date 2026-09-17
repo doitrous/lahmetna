@@ -36,7 +36,7 @@
     <div class="card" style="padding:24px;background:var(--bone-2);border:none">
       <h3 class="display" style="font-size:18px">Other ways to reach us</h3>
       <div style="margin-top:14px;display:flex;flex-direction:column;gap:14px;font-size:14px;line-height:1.5">
-        <div><div style="font-weight:600">Email us</div><a href="mailto:admin@lahmetna.com" dir="ltr" style="color:var(--cognac);font-weight:600">admin@lahmetna.com</a></div>
+        <div><div style="font-weight:600">Email us</div><a href="mailto:info@lahmetna.com" dir="ltr" style="color:var(--cognac);font-weight:600">info@lahmetna.com</a></div>
         <div><div style="font-weight:600">Track or manage an order</div><a href="account.html" style="color:var(--cognac)">Your account →</a></div>
         <div><div style="font-weight:600">Sell on Lahmetna</div><a href="apply.html" style="color:var(--cognac)">Apply as a farm or producer →</a></div>
       </div>
@@ -56,11 +56,11 @@ LH.boot().then(function(){
     var name = g('name'), email = g('email'), subject = g('subject') || 'Website enquiry', message = g('message');
     var body = 'Name: ' + name + '\nEmail: ' + email + '\n\n' + message;
     // No new backend: hand off to the visitor's mail client, the same zero-infra pattern the
-    // legal pages already assume for contact. admin@lahmetna.com is the site's real on-domain inbox.
-    window.location.href = 'mailto:admin@lahmetna.com'
+    // legal pages already assume for contact. info@lahmetna.com is the site's real on-domain inbox.
+    window.location.href = 'mailto:info@lahmetna.com'
       + '?subject=' + encodeURIComponent(subject)
       + '&body=' + encodeURIComponent(body);
-    ok.innerHTML = '<strong>Opening your email app…</strong> If nothing happens, write to us at admin@lahmetna.com and we’ll reply within the hour.';
+    ok.innerHTML = '<strong>Opening your email app…</strong> If nothing happens, write to us at info@lahmetna.com and we’ll reply within the hour.';
     ok.hidden = false;
   });
 });
