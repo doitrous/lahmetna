@@ -50,7 +50,7 @@ window.LH = (function () {
     'Free-Range Poultry': 'دواجن تربية حرة', 'Farm Fresh Eggs': 'بيض بلدي طازج', 'Fresh Dairy': 'ألبان طازجة',
     'Fresh Vegetables': 'خضروات طازجة', 'Seasonal Fruit': 'فاكهة موسمية', 'Live Livestock': 'مواشٍ حية',
     'Editorial guidelines': 'معايير التحرير',
-    'Delivery & cold-chain': 'التوصيل والتبريد', 'Returns & refunds': 'الإرجاع والاسترداد',
+    'Delivery & cold-chain': 'التوصيل والتبريد', 'Returns & refunds': 'الإرجاع والاسترداد', 'Contact us': 'اتصل بنا',
     '© 2026 Lahmetna. Raised right, priced fair.': '© ٢٠٢٦ لحمتنا. تربية سليمة وسعر عادل.',
     'Privacy': 'الخصوصية', 'Terms': 'الشروط', 'Cookies': 'ملفات تعريف الارتباط', 'Halal certification': 'شهادة الحلال',
     // hero
@@ -87,7 +87,15 @@ window.LH = (function () {
     'Subscribe': 'اشترك', 'you@email.com': 'بريدك الإلكتروني',
     // common labels (auth / checkout / product)
     'Home': 'الرئيسية', 'In stock': 'متوفر', 'Add to cart': 'أضف إلى السلة', 'Continue': 'متابعة',
-    'Create account': 'إنشاء حساب', 'Please log in to check out': 'سجّل الدخول لإتمام الشراء'
+    'Create account': 'إنشاء حساب', 'Please log in to check out': 'سجّل الدخول لإتمام الشراء',
+    // contact page
+    'We’re here to help': 'نحن هنا لمساعدتك', 'Get in touch': 'تواصل معنا', 'Message': 'الرسالة',
+    'Questions about an order, our farms, delivery or anything else? Send us a message and our team will get back to you — we answer within the hour, 9am–9pm.': 'أسئلة عن طلب أو مزارعنا أو التوصيل أو أي شيء آخر؟ أرسل لنا رسالة وسيرد عليك فريقنا — نرد خلال ساعة، من ٩ صباحًا حتى ٩ مساءً.',
+    'What’s this about?': 'ما موضوع رسالتك؟', 'How can we help?': 'كيف يمكننا مساعدتك؟', 'Send message': 'إرسال الرسالة',
+    'Other ways to reach us': 'طرق أخرى للتواصل', 'Email us': 'راسلنا بالبريد',
+    'Track or manage an order': 'تتبّع أو إدارة طلب', 'Your account →': 'حسابك →',
+    'Apply as a farm or producer →': 'قدّم كمزرعة أو منتِج →',
+    'We deliver across Cairo & Giza · our team answers within the hour, 9am–9pm.': 'نوصّل في القاهرة والجيزة · فريقنا يرد خلال ساعة، من ٩ صباحًا حتى ٩ مساءً.'
   };
 
   // product id -> Arabic display name
@@ -431,7 +439,7 @@ window.LH = (function () {
       '<div class="row" style="gap:10px;margin-top:18px"><span class="pill">Cash on delivery</span><span class="pill">Visa · Meeza · PayTabs</span></div></div>' +
       '<div><h4>Shop</h4><div class="links"><a href="index.html?cat=Beef#shop">Beef</a><a href="index.html?cat=Lamb%20%26%20Goat#shop">Lamb &amp; Goat</a><a href="index.html?cat=Poultry#shop">Poultry &amp; Eggs</a><a href="index.html?cat=Vegetables#shop">Vegetables &amp; Fruit</a><a href="index.html?cat=Livestock#shop">Livestock</a></div></div>' +
       '<div><h4>Company</h4><div class="links"><a href="apply.html">Sell on Lahmetna</a><a href="index.html#faq">How it works</a><a href="#">Sustainability</a><a href="#">Careers</a></div></div>' +
-      '<div><h4>Help</h4><div class="links"><a href="index.html#faq">FAQs</a><a href="help">Help centre</a><a href="legal.html?doc=shipping">Delivery &amp; cold-chain</a><a href="legal.html?doc=refunds">Returns &amp; refunds</a><a href="editorial-guidelines">Editorial guidelines</a><a href="login.html">My account</a></div></div>' +
+      '<div><h4>Help</h4><div class="links"><a href="index.html#faq">FAQs</a><a href="contact.html">Contact us</a><a href="help">Help centre</a><a href="legal.html?doc=shipping">Delivery &amp; cold-chain</a><a href="legal.html?doc=refunds">Returns &amp; refunds</a><a href="editorial-guidelines">Editorial guidelines</a><a href="login.html">My account</a></div></div>' +
       '<div><h4>Popular searches</h4><div class="links">' + POPULAR_SEARCHES.map(function (s) { return '<a href="' + s.href + '">' + esc(t(s.l)) + '</a>'; }).join('') + '</div></div>' +
       '</div><div class="base"><span>© 2026 Lahmetna. Raised right, priced fair.</span><div class="row" style="gap:22px;flex-wrap:wrap"><a href="legal.html?doc=privacy">Privacy</a><a href="legal.html?doc=terms">Terms</a><a href="legal.html?doc=cookies">Cookies</a><a href="legal.html?doc=halal">Halal certification</a></div></div></div></footer>';
   }

@@ -484,7 +484,7 @@ const xmlEsc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<':
 function sitemapXml(req) {
   const base = baseUrl(req);
   const today = new Date().toISOString().slice(0, 10);
-  const urls = [{ loc: base + '/', lastmod: today, priority: '1.0' }, { loc: base + '/apply.html', lastmod: today, priority: '0.5' }];
+  const urls = [{ loc: base + '/', lastmod: today, priority: '1.0' }, { loc: base + '/contact.html', lastmod: today, priority: '0.6' }, { loc: base + '/apply.html', lastmod: today, priority: '0.5' }];
   q.vendors().filter((v) => v.status === 'active').forEach((v) => urls.push({ loc: base + '/vendor.html?slug=' + encodeURIComponent(v.slug), lastmod: (v.created || today).slice(0, 10), priority: '0.6' }));
   q.products({}).forEach((p) => urls.push({ loc: base + '/product.html?id=' + encodeURIComponent(p.id), lastmod: (p.created || today).slice(0, 10), priority: '0.7' }));
   const body = urls.map((u) => '  <url><loc>' + xmlEsc(u.loc) + '</loc><lastmod>' + u.lastmod + '</lastmod><priority>' + u.priority + '</priority></url>').join('\n');
